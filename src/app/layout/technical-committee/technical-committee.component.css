@@ -1,0 +1,25 @@
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 1rem;
+}
+
+.p-field {
+  display: flex;
+  flex-direction: column;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-inputnumber {
+  width: 100%;
+}

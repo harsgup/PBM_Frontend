@@ -1,0 +1,63 @@
+<p-card header="User Privileges">
+
+  <form [formGroup]="form">
+
+     <p-table
+    [value]="users"
+    [loading]="loading"
+    responsiveLayout="scroll">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>PIS</th>
+        <th>Name</th>
+        <th>Rank</th>
+        <th>Role</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+
+        <td>{{ user.pis }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.rank }}</td>
+
+        <td>
+       <p-dropdown
+        [options]="roles"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="user.role"
+        [ngModelOptions]="{ standalone: true }"
+        (onChange)="user.role = $event.value">
+      </p-dropdown>
+       </td>
+
+          <td class="action-col"> 
+            <button
+              pButton
+              icon="pi pi-save"
+              label="Save"
+              (click)="confirmSave(user)">
+            </button>
+              <button
+              pButton
+              icon="pi pi-trash"
+              label="Delete User"
+              class="p-button-sm p-button-danger"
+              (click)="confirmDelete(user)"
+              >
+            </button>
+          </td>
+
+        </tr>
+      </ng-template>
+
+    </p-table>
+<p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>
+  </form>
+
+</p-card>

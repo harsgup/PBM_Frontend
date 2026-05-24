@@ -1,0 +1,69 @@
+<p-card header="Add New User">
+
+  <form [formGroup]="addUserForm" (ngSubmit)="submit()">
+
+    <div class="form-grid">
+
+      <div class="p-field">
+        <label>PIS Number</label>
+        <input
+          pInputText
+          formControlName="pis"
+          placeholder="Enter PIS"
+          class="w-full" />
+      </div>
+
+      <div class="p-field">
+        <label>Name</label>
+        <input
+          pInputText
+          formControlName="name"
+          placeholder="Enter Name"
+          class="w-full" />
+      </div>
+
+      <div class="p-field">
+        <label>Rank</label>
+          <input
+          pInputText
+          formControlName="rank"
+          placeholder="Enter Rank"
+          class="w-full" />
+      </div>
+
+      <div class="p-field">
+        <label>Role</label>
+        <p-dropdown
+          [options]="roles"
+          formControlName="role"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label>Password</label>
+        <p-password
+          formControlName="password"
+          [feedback]="false"
+          toggleMask="true"
+          placeholder="Basic Password"
+          class="w-full">
+        </p-password>
+      </div>
+
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Add User"
+      icon="pi pi-plus"
+      [loading]="loading"
+      [disabled]="addUserForm.invalid">
+    </button>
+<p-toast></p-toast>
+  </form>
+
+</p-card>

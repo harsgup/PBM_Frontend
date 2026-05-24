@@ -1,0 +1,60 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-inputnumber {
+  width: 100%;
+}
+
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-card {
+  text-align: center;
+  border-radius: 10px;
+
+  .count {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .label {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+  }
+}
+
+.available {
+  background: #bfdaee;
+}
+
+.v1 {
+  background: #facb80;
+}
+
+.v2 {
+  background: #fab4cb;
+}
+
+.app {
+  background: #d5f1d7;
+}

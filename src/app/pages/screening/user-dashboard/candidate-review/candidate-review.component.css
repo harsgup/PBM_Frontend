@@ -1,0 +1,42 @@
+::ng-deep .p-accordion-header-link * {
+  pointer-events: none;
+}
+
+::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+::ng-deep .p-accordion .p-accordion-header:not(.p-disabled) .p-accordion-header-link:focus {
+  box-shadow: 0 0 0 2px #3b82f6;
+  outline: none;
+}
+
+::ng-deep .p-accordion .p-accordion-header:not(.p-highlight):not(.p-disabled) .p-accordion-header-link:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+::ng-deep .p-accordion .p-accordion-tab {
+  margin-bottom: 0.75rem;
+}
+
+::ng-deep .p-accordion .p-accordion-content {
+  border: 1px solid #e2e8f0;
+  border-top: 0;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  padding: 1.25rem;
+  background: #ffffff;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}

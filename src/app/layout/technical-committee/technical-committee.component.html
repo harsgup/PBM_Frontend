@@ -1,0 +1,148 @@
+<p-card header="Technical Committees">
+  <div class="table-toolbar">
+
+  <button
+    *ngIf="!showForm"
+    pButton
+    label="New"
+    icon="pi pi-plus"
+    class="p-button-success mr-2"
+    (click)="openForm()">
+  </button>
+  <button
+    *ngIf="!showForm"
+    pButton
+    label="Export PDF"
+    icon="pi pi-file-pdf"
+    class="p-button-danger"
+    (click)="exportPdf()">
+  </button>
+
+  <button
+    *ngIf="showForm"
+    pButton
+    label="Cancel"
+    icon="pi pi-times"
+    class="p-button-secondary"
+    (click)="cancelForm()">
+  </button>
+
+</div>
+
+<p-table
+  #dt *ngIf="!showForm"
+  [value]="committees"
+  [loading]="loading"
+  [paginator]="true"
+  [rows]="10">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Recruitment Cycle</th>
+      <th>Post Name</th>
+      <th>Committee Name</th>
+      <th>Chairman</th>
+      <th>Lab Rep</th>
+      <th>External Member</th>
+      <th>Subject Expert</th>
+      <th>Action</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-c>
+    <tr>
+      <td>{{c.cycle}}</td>
+      <td>{{c.post}}</td>
+      <td>{{ c.committee_name }}</td>
+      <td>{{ c.chairman }}</td>
+      <td>{{ c.lab_rep }}</td>
+      <td>{{ c.external_member }}</td>
+      <td>{{ c.subject_expert }}</td>
+       <td>
+      <button
+        pButton
+        icon="pi pi-pencil"
+        class="p-button-warning p-button-sm mr-2"
+        (click)="editCommittee(c)">
+      </button>
+      <button
+        pButton
+        icon="pi pi-trash"
+        class="p-button-danger p-button-sm"
+        (click)="confirmDelete(c)">
+      </button>
+    </td>
+    </tr>
+  </ng-template>
+
+</p-table>
+
+<div *ngIf="showForm">
+
+<form [formGroup]="committeeForm" (ngSubmit)="submit()">
+
+  <div class="form-grid">
+
+      <div class="p-field">
+        <label>Recruitment Cycle</label>
+        <p-dropdown
+          [options]="cycles"
+          formControlName="cycle"
+          placeholder="Select Cycle"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label>Post</label>
+        <p-dropdown
+          [options]="posts"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="post"
+          placeholder="Select Post"
+          class="w-full"
+          [disabled]="!committeeForm.value.cycle">
+        </p-dropdown>
+      </div>
+
+    <div class="p-field">
+      <label>Committee Name</label>
+      <input pInputText formControlName="committee_name" />
+    </div>
+
+     <div class="p-field">
+      <label>Chairman</label>
+      <input pInputText formControlName="chairman" />
+    </div>
+
+    <div class="p-field">
+      <label>Lab Representative</label>
+      <input pInputText formControlName="lab_rep" />
+    </div>
+
+    <div class="p-field">
+      <label>External Member</label>
+      <input pInputText formControlName="external_member" />
+    </div>
+
+    <div class="p-field">
+      <label>Subject Expert</label>
+      <input pInputText formControlName="subject_expert" />
+    </div>
+
+  </div>
+
+  <button
+    pButton
+    label="Save Committee"
+    icon="pi pi-check"
+    type="submit"
+    [disabled]="committeeForm.invalid">
+  </button>
+
+</form>
+
+</div>
+<p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>

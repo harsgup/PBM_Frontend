@@ -1,0 +1,127 @@
+
+<p-card header="Assign Job">
+
+  <div class="summary-grid" >
+
+  <p-card class="summary-card available">
+    <div class="count">{{ summary.total }}</div>
+    <div class="label">Total Jobs</div>
+  </p-card>
+
+  <p-card class="summary-card v1">
+    <div class="count">{{ summary.available_verifier1 }}</div>
+    <div class="label">Available for Verifier-1</div>
+  </p-card>
+
+  <p-card class="summary-card v2">
+    <div class="count">{{ summary.available_verifier2 }}</div>
+    <div class="label">Available for Verifier-2</div>
+  </p-card>
+
+  <p-card class="summary-card app">
+    <div class="count">{{ summary.available_approver }}</div>
+    <div class="label">Available for Approver</div>
+  </p-card>
+
+</div>
+
+
+  <form [formGroup]="assignForm" (ngSubmit)="submit()">
+
+    <div class="form-grid">
+
+      <div class="p-field">
+        <label>Cycle</label>
+        <p-dropdown
+          [options]="cycles"
+          formControlName="cycle"
+          placeholder="Select Cycle"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label>Post</label>
+        <p-dropdown
+          [options]="posts"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="post"
+          placeholder="Select Post"
+          class="w-full"
+          [disabled]="!assignForm.value.cycle">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label>User Type</label>
+        <p-dropdown
+          [options]="userTypes"
+          formControlName="userType"
+          placeholder="Select User Type"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label>User</label>
+        <p-dropdown
+          [options]="users"
+          formControlName="user"
+          placeholder="Select User"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field" *ngIf="assignForm.value.userType === 'verifier'">
+        <label>Verifier Group</label>
+        <p-dropdown
+          [options]="verifierLevels"
+          formControlName="verifierLevel"
+          placeholder="Select Level"
+          class="w-full">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label>No. of Jobs</label>
+        <p-inputNumber
+          formControlName="jobCount"
+          [min]="1"
+          class="w-full">
+        </p-inputNumber>
+      </div>
+
+      <div class="p-field full-width">
+        <label>Assignment Type</label>
+
+        <div class="radio-group">
+          <p-radioButton
+            name="assignType"
+            value="random"
+            formControlName="assignType"
+            label="Random">
+          </p-radioButton>
+
+          <p-radioButton
+            name="assignType"
+            value="continuous"
+            formControlName="assignType"
+            label="Continuous">
+          </p-radioButton>
+        </div>
+      </div>
+
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Assign Job"
+      icon="pi pi-check" 
+      [disabled]="assignForm.invalid">
+    </button>
+<p-toast></p-toast>
+  </form>
+
+</p-card>

@@ -1,0 +1,17 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+:host ::ng-deep.p-dropdown,
+:host ::ng-deep.p-password,
+:host ::ng-deep.p-password input,
+.p-inputtext {
+  width: 100%;
+}
+
+
+button {
+  margin-top: 1rem;
+}

@@ -1,0 +1,35 @@
+<div class="flex flex-col p-5">
+
+  <!-- Dropdown Menu to select cycle -->
+  <div class="mx-4 my-4 p-5">
+    <p-card header="Select Cycle and Post Name">
+
+      <form [formGroup]="setCyclePostForm" (ngSubmit)="submit()">
+
+        <div class="form-grid">
+
+          <div class="p-field">
+            <label>Select Recruitment Cycle</label>
+            <p-dropdown [options]="(cycle$ | async) ?? []" formControlName="cycle" optionLabel="label"
+              optionValue="value" placeholder="Select Advt. no." [disabled]="!cycleControl.value" class="w-full">
+            </p-dropdown>
+          </div>
+
+          <div class="p-field">
+            <label>Select Post Name</label>
+            <p-dropdown [options]="(post$ | async) ?? []" formControlName="post" optionLabel="label" optionValue="value"
+              placeholder="Select Post" [disabled]="!postControl.value" class="w-full">
+            </p-dropdown>
+          </div>
+
+
+        </div>
+
+        <button pButton type="submit" label="Show Candidates" icon="pi pi-plus" [loading]="loading"
+          [disabled]="setCyclePostForm.invalid">
+        </button>
+      </form>
+
+    </p-card>
+  </div>
+</div>

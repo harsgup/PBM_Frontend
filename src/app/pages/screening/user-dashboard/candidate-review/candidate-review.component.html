@@ -1,0 +1,168 @@
+<p-dialog
+    [(visible)]="visible"
+    [modal]="true"
+    [style]="{ width: '100vw', height: '100vh'}"
+    [contentStyle]="{height: '100%'}"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="close.emit()"
+    header="Candidate Review"
+    >
+    <p-toast></p-toast>
+    <div class="flex h-full" *ngIf="candidateDetails">
+        <!-- Left Panel -->
+         <div class="w-1/3 border-r p-4 overflow-y-auto">
+            <h3 class="font-semibold mb-3">
+                {{ candidateDetails.personal_details.application_no }}
+            </h3>
+            <p-accordion [multiple]="true">
+                <!-- Personal Information -->
+                <p-accordionTab header="Personal Information">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div><b>Name:</b></div>
+                        <div>{{ candidateDetails.personal_details.candidate_name }}</div>
+
+                        <div><b>Father Name:</b></div>
+                        <div>{{ candidateDetails.personal_details.father_name }}</div>
+
+                        <div><b>Gender:</b></div>
+                        <div>{{ candidateDetails.personal_details.gender }}</div>
+
+                        <div><b>Date of Birth:</b></div>
+                        <div>{{ candidateDetails.personal_details.date_of_birth + ' (Age: ' + candidateDetails.personal_details.age + ')' }}</div>
+
+                        <div><b>Category:</b></div>
+                        <div>{{ candidateDetails.personal_details.category }}</div>
+                        @if(candidateDetails.personal_details.category.toLowerCase() != 'unreserved')
+                        {
+                            <div><b>Category Certificate:</b></div>
+                            <div>{{ candidateDetails.personal_details.category_certificate_no }}</div>
+                            <div><b>Category Certificate Issue Date and State: </b></div>
+                            <div>{{ candidateDetails.personal_details.category_certificate_issue_date + ' (' + candidateDetails.personal_details.category_certificate_issue_state + ')' }}</div>
+                        }
+                        
+                        <div><b>Physical Disability:</b></div>
+                        <div>{{ candidateDetails.personal_details.disability }}</div>
+                        @if(candidateDetails.personal_details.disability.toLowerCase() == 'yes')
+                        {
+                            <div><b>Type of Disability:</b></div>
+                            <div>{{ candidateDetails.personal_details.type_of_disability }}</div>
+                            <div><b>Percentage of Disability:</b></div>
+                            <div>{{ candidateDetails.personal_details.percentage_of_disability }}</div>
+                            <div><b>Disability Certificate:</b></div>
+                            <div>{{ candidateDetails.personal_details.disability_certificate_no }}</div>
+                            <div><b>Disability Certificate Issue Date: </b></div>
+                            <div>{{ candidateDetails.personal_details.disability_certificate_issue_date }}</div>
+                        }
+                        <div><b>Ex Serviceman:</b></div>
+                        <div>{{ candidateDetails.personal_details.Ex_serviceman }}</div>
+                        @if(candidateDetails.personal_details.Ex_serviceman.toLowerCase() == 'yes')
+                        {
+                            <div><b>Date of Joining:</b></div>
+                            <div>{{ candidateDetails.personal_details.date_of_joining }}</div>
+                            <div><b>Date of Discharge from Service: </b></div>
+                            <div>{{ candidateDetails.personal_details.date_of_discharge }}</div>
+                        }
+                        <div><b>Identity Type:</b></div>
+                        <div>{{ candidateDetails.personal_details.identity_type }}</div>
+                        <div><b>Identity Number:</b></div>
+                        <div>{{ candidateDetails.personal_details.identity_no }}</div>
+                    </div>
+                    
+                </p-accordionTab>
+                      <!-- Education -->
+                <p-accordionTab header="Educational Information">
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div><b>Qualification:</b></div>
+                    <div>{{candidateDetails.education_details.qualification}}</div>
+
+                    <div><b>Subject:</b></div>
+                    <div>{{candidateDetails.education_details.subject}}</div>
+
+                    <div><b>Passing Status:</b></div>
+                    <div>{{candidateDetails.education_details.passing_status}}</div>
+                    @if(candidateDetails.education_details.passing_status.toLowerCase() == 'passed')
+                    {
+                        <div><b>Date of Passing:</b></div>
+                        <div>{{candidateDetails.education_details.passing_date}}</div>
+                    }
+                    <div><b>Board:</b></div>
+                    <div>{{candidateDetails.education_details.board_name}}</div>
+                    <div><b>Marking Scheme:</b></div>
+                    <div>{{candidateDetails.education_details.marking_scheme}}</div>
+                    <div><b>Marks obtained:</b></div>
+                    <div>{{candidateDetails.education_details.obtained_marks_CGPA}}</div>
+                    <div><b>Total Marks:</b></div>
+                    <div>{{candidateDetails.education_details.total_marks_CGPA}}</div>
+                    <div><b>Class Division:</b></div>
+                    <div>{{candidateDetails.education_details.class_division}}</div>
+                    </div>
+                </p-accordionTab>
+                <p-accordionTab header="Experience">
+                    <div *ngFor="let exp of candidateDetails.experience_details" class="mb-3 border-b pb-2">
+                    <div><b>{{exp.name}}</b></div>
+                    <div>{{exp.designation}}</div>
+                    <div class="text-xs text-gray-500">{{exp.duration}}</div>
+                    </div>
+                </p-accordionTab>
+            </p-accordion>
+            <!-- Documents -->
+            <div class="mt-4">
+            <h4 class="font-semibold mb-2">Documents</h4>
+
+            <button pButton class="p-button-text w-full text-left"
+                (click)="selectDocument('doc1.jpg')">Aadhar</button>
+
+            <button pButton class="p-button-text w-full text-left"
+                (click)="selectDocument('doc2.jpg')">10th</button>
+            </div>
+
+         </div>
+        <!-- Right Panel -->
+        <div class="w-2/3 p-4 flex flex-col">
+
+            <!-- Viewer -->
+            <div class="flex-1 border rounded flex items-center justify-center">
+
+            <div *ngIf="!selectedDocument" class="text-gray-400">
+                Select document to preview
+            </div>
+
+            <img *ngIf="selectedDocument"
+                [src]="selectedDocument"
+                class="max-w-full max-h-full object-contain" />
+
+        </div>
+        <!-- FORM -->
+        <div *ngIf="reviewForm">
+            <form [formGroup]="reviewForm" class="mt-4 flex gap-4 items-center">
+
+            <p-dropdown
+                [options]="statusOptions"
+                optionLabel="label"
+                optionValue="value"
+                formControlName="status"
+                placeholder="Select Status"
+                class="w-48">
+            </p-dropdown>
+
+            <input
+                type="text"
+                pInputText
+                formControlName="remarks"
+                placeholder="Enter remarks"
+                class="flex-1 text-lg w-full h-16"
+            />
+
+            <button pButton label="Submit" (click)="submitReview()" [disabled]="reviewForm.disabled"></button>
+
+            </form>
+        </div>
+        <!-- Navigation -->
+        <div class="flex justify-between mt-3">
+        <button pButton label="Previous" (click)="previousCandidate()" [disabled]="currentIndex <= 0"></button>
+        <button pButton label="Next" (click)="nextCandidate()" [disabled]="currentIndex >= candidates.length - 1"></button>
+        </div>
+    </div>
+    </div>
+</p-dialog>

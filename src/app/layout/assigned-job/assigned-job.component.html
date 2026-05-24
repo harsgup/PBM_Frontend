@@ -1,0 +1,70 @@
+<p-card header="Assigned Jobs">
+
+  <div class="table-toolbar">
+
+   <span class="p-input-icon-left search-box">
+  <i class="pi pi-search"></i>
+  <input
+    #searchInput
+    pInputText
+    type="text"
+    placeholder="Search..."
+    class="search-input"
+    (input)="dt.filterGlobal(searchInput.value, 'contains')"
+  />
+</span>
+
+    <button
+      pButton
+      label="Export PDF"
+      icon="pi pi-file-pdf"
+      class="p-button-danger"
+      (click)="generatePdf()"
+    >
+    </button>
+
+  </div>
+  <p-table
+   #dt [value]="jobs" [loading]="loading" 
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 25, 50, 100]"
+  [globalFilterFields]="['cycle', 'post_name', 'application_no', 'status']">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Cycle</th>
+        <th>Post</th>
+        <th>Application No</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-job>
+      <tr>
+        <td>{{ job.cycle }}</td>
+        <td>{{ job.post_name }}</td>
+        <td>{{ job.application_no }}</td>
+        <td>
+          <span class="status-badge">{{ job.status }}</span>
+        </td>
+        <td>
+          <button
+            pButton
+            label="Reset"
+            icon="pi pi-refresh"
+            class="p-button-danger p-button-sm"
+            (click)="confirmReset(job)">
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+</p-card>
+
+<p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>
+

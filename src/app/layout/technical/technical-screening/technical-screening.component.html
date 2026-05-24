@@ -1,0 +1,406 @@
+<p-card class="pcard1" header="Technical Screening">
+
+<form [formGroup]="CyclePostForm">
+
+  <div class="filter-row">
+
+    <div class="p-field">
+      <label>Recruitment Cycle</label>
+      <p-dropdown
+        [options]="cycles"
+        formControlName="cycle"
+        placeholder="Select Cycle"
+        class="w-full">
+      </p-dropdown>
+    </div>
+
+    <div class="p-field">
+      <label>Post Name</label>
+      <p-dropdown
+        [options]="posts"
+        optionLabel="label"
+        optionValue="value"
+        formControlName="post"
+        placeholder="Select Post"
+        class="w-full"
+        [disabled]="!CyclePostForm.value.cycle">
+      </p-dropdown>
+    </div>
+
+    <div class="button-field">
+      <button
+        pButton
+        type="submit"
+        label="Show Candidates"
+        icon="pi pi-search"
+        [loading]="loading"
+        [disabled]="CyclePostForm.invalid"
+        (click)="showCandidates()">
+      </button>
+  </div>
+
+  </div>
+
+</form>
+
+</p-card>
+
+<p-card >
+
+<p-table
+  #dt
+  [value]="jobs"
+  [loading]="loading"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10,25,50]"
+  [globalFilterFields]="['application_no', 'cycle', 'post_name', 'committee_name', 'status']">
+
+  <ng-template pTemplate="caption">
+    <div class="table-header">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input 
+          pInputText 
+          type="text" 
+          (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+          placeholder="Search..." />
+      </span>
+
+      <button
+      pButton
+      label="Export PDF"
+      icon="pi pi-file-pdf"
+      class="p-button-danger"
+      (click)="generatePdf()"
+    >
+    </button>
+
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="application_no">
+        Application No <p-sortIcon field="application_no"></p-sortIcon>
+        <p-columnFilter type="text" field="application_no" display="menu"></p-columnFilter>
+      </th>
+      <th pSortableColumn="cycle">
+        Recruitment Cycle <p-sortIcon field="cycle"></p-sortIcon>
+        <p-columnFilter type="text" field="cycle" display="menu"></p-columnFilter>
+      </th>
+      <th pSortableColumn="post_name">
+        Post Name <p-sortIcon field="post_name"></p-sortIcon>
+        <p-columnFilter type="text" field="post_name" display="menu"></p-columnFilter>
+      </th>
+      <th pSortableColumn="committee_name">
+        Committee <p-sortIcon field="committee_name"></p-sortIcon>
+        <p-columnFilter type="text" field="committee_name" display="menu"></p-columnFilter>
+      </th>
+      <th>Approver Remark</th>
+      <th pSortableColumn="status">
+        Status <p-sortIcon field="status"></p-sortIcon>
+        <p-columnFilter type="text" field="status" display="menu"></p-columnFilter>
+      </th>
+      <th>Action</th> </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-job>
+    <tr [ngClass]="{'row-completed': job.status === 'complete'}">
+
+      <td>{{ job.application_no }}</td>
+      <td>{{ job.cycle }}</td>
+      <td>{{ job.post_name }}</td>
+      <td>{{job.committee_name}}</td>
+      <td>{{ job.approver_remarks }}</td>
+      <td class="text-center">
+      <div class="status-cell">
+        <p-tag 
+          [severity]="job.status === 'complete' ? 'success' : 'warning'" 
+          [value]="job.status | uppercase">
+        </p-tag>
+      </div>
+      </td>
+      <td>
+
+        <button
+          pButton
+          icon="pi pi-eye"
+          class="p-button-info p-button-sm"
+          (click)="loadCandidate(job)">
+        </button>
+
+      </td>
+
+    </tr>
+  </ng-template>
+
+</p-table>
+<p-toast></p-toast>
+</p-card>
+
+
+<p-dialog
+  header="Candidate Technical Evaluation"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="{width:'80vw'}"
+  [maximizable]="true"
+  [draggable]="false">
+
+  <h3 class="headings">Personal Details</h3>
+
+  <div class="info-grid">
+
+  <div class="info-item">
+    <span class="lbel">Application No</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.application_no}}</span>
+  </div>
+
+  <div class="info-item">
+    <span class="lbel">Candidate Name</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.C_name}}</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Father Name</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.F_name}}</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Mother Name</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.M_name}}</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Category</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.category}}</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Date of Birth</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.DOB | date: 'dd/MM/yyyy'}} ({{candidate?.age}})</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Identity</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.identity_no}} ({{candidate?.identity_type}})</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Marital Status</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.marital_status}}</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">PwBD</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.pwd}}</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Age Relaxation</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.age_relaxation}} ({{candidate?.relaxation_in}})</span>
+  </div>
+  <div class="info-item">
+    <span class="lbel">Ex-Servicemen</span>
+    <span class="clon">:</span>
+    <span class="vlue">{{candidate?.exserve}}</span>
+  </div>
+  <!-- <div><b>Father Name:</b> {{candidate?.F_name}}</div> -->
+  <!-- <div><b>Mother Name:</b> {{candidate?.M_name}}</div> -->
+  <!-- <div><b>Category:</b> {{candidate?.category}}</div> -->
+  <!-- <div><b>Date of Birth:</b> {{candidate?.DOB | date: 'dd/MM/yyyy'}} ({{candidate?.age}})</div> -->
+  <!-- <div><b>Identity:</b> {{candidate?.identity_no}} ({{candidate?.identity_type}})</div> -->
+  <!-- <div><b>Marital Status:</b> {{candidate?.marital_status}}</div> -->
+  <!-- <div><b>PwBD:</b> {{candidate?.pwd}}</div> -->
+  <!-- <div><b>Age Relaxation:</b> {{candidate?.age_relaxation}} ({{candidate?.relaxation_in}})</div> -->
+  <!-- <div><b>Ex-Servicemen:</b> {{candidate?.exserve}}</div> -->
+
+</div>
+  <!-- <div style="text-align: center;">
+    <button
+      pButton
+      icon="pi pi-eye"
+      label="View Document"
+      class="p-button-info p-button-sm"
+      (click)="viewDocument(candidate?.document)">
+    </button>
+
+  </div> -->
+
+<h3 class="headings">Education</h3>
+
+<p-table [value]="education">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Qualification</th>
+      <th>Subject</th>
+      <th>Board Name</th>
+      <th>Status</th>
+      <th>Division</th>
+      <th>Degree</th>
+      <th>Marksheet</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-ed>
+    <tr>
+
+      <td>{{ed.qualification}}</td>
+      <td>{{ed.subject_}}</td>
+      <td>{{ed.boardName}}</td>
+      <td>{{ed.passing_status}}</td>
+      <td>{{ed.class_division || '-'}}</td>
+
+      <td>
+        <button
+          pButton
+          icon="pi pi-eye"
+          class="p-button-info p-button-sm"
+          (click)="openDocument(ed.application_no,'education', 'degree',ed.qualification)">
+        </button>
+      </td>
+
+      <td>
+        <button
+          pButton
+          icon="pi pi-eye"
+          class="p-button-info p-button-sm"
+          (click)="openDocument(ed.application_no,'education', 'marksheet',ed.qualification)">
+        </button>
+      </td>
+
+    </tr>
+  </ng-template>
+
+</p-table>
+
+<h3 class="headings">Experience</h3>
+
+<p-table [value]="experience">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Organization</th>
+      <th>Designation</th>
+      <th>Employment Type</th>
+      <th>Duration</th>
+      <th>Exp. Certificate</th>
+      <th>Salary Slip</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-exp>
+    <tr>
+
+      <td>{{exp.name}}</td>
+      <td>{{exp.designation}}</td>
+      <td>{{exp.employment_type}}</td>
+      <td>{{exp.duration}}</td>
+
+       <td>
+        <button
+          pButton
+          icon="pi pi-eye"
+          class="p-button-info p-button-sm"
+          (click)="openDocument(exp.application_no,'experience', 'experience_cert',exp.from_date + '_' + exp.to_date)">
+        </button>
+      </td>
+
+      <td>
+        <button
+          pButton
+          icon="pi pi-eye"
+          class="p-button-info p-button-sm"
+          (click)="openDocument(exp.application_no,'experience', 'salary_slip',exp.from_date + '_' + exp.to_date)">
+        </button>
+      </td>
+
+    </tr>
+  </ng-template>
+
+</p-table>
+
+<h3 class="headings">Technical Evaluation</h3>
+
+<form [formGroup]="Form">
+
+<div class="form-grid">
+
+  <div class="p-field">
+    <label>Committee</label>
+   <input type="text" pInputText [readonly]="true" formControlName="committees">
+   <div *ngIf="committeeDetails" style="font-size: 0.85rem; color: #6c757d; margin-top: 5px;">
+    (Chairman: {{committeeDetails.chairman}}, Expert: {{committeeDetails.subject_expert}}, 
+     Lab Rep: {{committeeDetails.lab_rep}}, External: {{committeeDetails.external_member}})
+  </div>
+  </div>
+
+  <div class="p-field">
+    <label>Final Marks</label>
+
+    <input
+      pInputText
+      formControlName="final_marks">
+  </div>
+
+</div>
+
+<div class="p-field">
+
+<label>Remarks</label>
+
+<input
+      pInputText
+      formControlName="remarks">
+
+</div>
+
+<button
+  pButton
+  label="Submit Evaluation"
+  icon="pi pi-check"
+  (click)="submit()"
+  [loading]="submitting">
+</button>
+</form>
+<p-confirmDialog></p-confirmDialog>
+</p-dialog>
+
+<p-dialog
+  header="Document Viewer"
+  [(visible)]="docDialogVisible"
+  [modal]="true"
+  [maximizable]="true"
+  [style]="{width: '400px'}">
+
+  <div class="doc-toolbar">
+
+    <button pButton icon="pi pi-plus" (click)="zoomIn()"></button>
+
+    <button pButton icon="pi pi-minus" (click)="zoomOut()"></button>
+
+    <button pButton label="Reset" (click)="resetZoom()"></button>
+
+  </div>
+
+  <div class="doc-container">
+
+    <img
+      *ngIf="docType === 'image'"
+      [src]="docUrl"
+      [style.transform]="'scale(' + zoom + ')'"
+      class="doc-content" />
+
+    <iframe
+      *ngIf="docType === 'pdf'"
+      [src]="docUrl"
+      class="doc-content">
+    </iframe>
+
+  </div>
+
+</p-dialog>

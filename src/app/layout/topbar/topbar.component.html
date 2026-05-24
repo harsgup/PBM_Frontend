@@ -1,0 +1,17 @@
+<div class="top-div-logo">
+    <img src="assets/images/logoTOP.png">
+</div>
+<div class="topbar">
+  <div class="left">
+    <span class="title">Candidate Screening System</span>
+  </div>
+
+    <div class="right">
+        <span class="session-timer">
+          ⏳ {{ sessionTime }}
+        </span>
+
+        <span class="user-role">{{this.userName}}</span>
+    <button pButton icon="pi pi-sign-out" class="p-button-text" (click)="logout()"></button>
+  </div>
+</div>

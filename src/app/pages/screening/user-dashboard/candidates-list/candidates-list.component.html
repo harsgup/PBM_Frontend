@@ -1,0 +1,189 @@
+<!-- Filter Bar -->
+<div class="flex items-center gap-4 mb-4">
+  <label class="text-sm font-medium text-gray-600">
+    Filter by Status
+  </label>
+
+  <p-dropdown
+    [options]="statusOptions"
+    [(ngModel)]="selectedStatus"
+    (onChange)="onStatusChange()"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Select Status"
+    class="w-52"
+  ></p-dropdown>
+</div>
+
+
+<p-table 
+    [value]="filteredCandidates"
+    class="w-full"
+    [paginator]="true"
+    [rows]="5"
+    responsiveLayout="scroll"
+    >
+    <ng-template pTemplate="header">
+        <tr class="bg-gray-100 text-gray-700 text-sm">
+            <th class="px-4 py-3 text-left w-[60px]">S. No</th>
+            <th class="px-4 py-3 text-left">Application No</th>
+            <th class="px-4 py-3 text-left">Candidate Name</th>
+            <th class="px-4 py-3 text-left">Father Name</th>
+            <th class="px-4 py-3 text-left">Status</th>
+            <th class="px-4 py-3 text-left">Remarks</th>
+            <th class="px-4 py-3 text-center w-[120px]">Action</th>
+        </tr>
+    </ng-template>
+    <!-- Table Body -->
+     <ng-template pTemplate="body" let-row let-i="rowIndex">
+        <tr class="border-b text-sm hover:bg-gray-50">
+            <td class="px-4 py-3">{{ i + 1 }}</td>
+            <td class="px-4 py-3 font-medium text-[poppins]">{{ row.application_no }}</td>
+            <td class="px-4 py-3">{{row.candidate_name}}</td>
+            <td class="px-4 py-3">{{row.father_name}}</td>
+            <td class="px-4 py-3">
+                <status-badge [status]="row.verifier_status"></status-badge>
+            </td>
+            <!-- Remarks -->
+             <td class="px-4 py-3 text-gray-600">
+                {{row.verifier_remarks || 'Action Not Taken'}}
+             </td>
+             <!-- Action -->
+              <td class="px-4 py-3 text-center">
+                <button 
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-sm p-button-text text-blue-600"
+                  (click)="openCandidateReview(row.application_no)">
+                </button>
+              </td>
+        </tr>
+     </ng-template>
+     <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="7" class="text-center py-8 text-slate-500 font-semibold text-base bg-slate-50 border border-slate-100 rounded-lg">
+                <i class="pi pi-inbox block text-3xl mb-2 text-slate-400"></i>
+                No candidates found in cycle {{ cycle }} for you
+            </td>
+        </tr>
+     </ng-template>
+</p-table>
+<!-- ------------------------------------------------ -->
+<!-- This is for Dialog Box to show candidate details -->
+<!-- ------------------------------------------------ -->
+<app-candidate-review
+  [visible]="reviewDialogVisible"
+  [applicationNo]="selectedCandidateApplicationNo"
+  [candidates]="filteredCandidates"
+  [currentIndex]="selectedCandidateIndex"
+  (navigate)="onCandidateNavigate($event)"
+  (close)="onReviewDialogClosed()"
+  (reviewSubmitted)="onReviewSubmitted($event)"
+></app-candidate-review>
+<!-- This will display the candidate review modal -->
+ <!-- <p-dialog
+  [(visible)]="reviewDialogVisible"
+  [modal]="true"
+  [style]="{ width: '95vw', height: '95vh' }"
+  [contentStyle]="{ height: '90vh' }"
+  [draggable]="false"
+  [resizable]="false"
+  header="Candidate Review"
+> -->
+
+<!-- <div class="flex h-full"> -->
+
+  <!-- LEFT SIDE (Candidate Details) -->
+  <!-- <div class="w-1/3 border-r pr-4 overflow-y-auto">
+
+    <h3 class="text-lg font-semibold mb-2">
+      <b>Application No:</b> {{selectedCandidateApplicationNo}}
+    </h3>
+    <hr class="my-2">
+      <p-accordion [multiple]="true">
+        <p-accordionTab header="Personal Details">
+          <div grid grid-cols-2 gap-x-4 gap-y-2 text-sm>
+            <div><b>Name:</b></div>
+          <div>{{candidateDetails.personal_details.candidate_name}}</div>
+
+          <div><b>Father Name:</b></div>
+          <div>{{candidateDetails.personal_details.father_name}}</div>
+
+          <div><b>Gender:</b></div>
+          <div>{{candidateDetails.personal_details.gender}}</div>
+
+          </div>
+        </p-accordionTab>
+
+      </p-accordion>
+
+    <h4 class="font-semibold mb-3">Documents</h4> -->
+
+    <!-- Document Links -->
+    <!-- <div *ngIf="!selectedDocument">
+
+      <button
+        pButton
+        class="p-button-text w-full text-left"
+        (click)="openDocument('doc1.pdf')"
+      >
+        Aadhar Card
+      </button>
+
+      <button
+        pButton
+        class="p-button-text w-full text-left"
+        (click)="openDocument('doc2.pdf')"
+      >
+        10th Certificate
+      </button>
+
+      <button
+        pButton
+        class="p-button-text w-full text-left"
+        (click)="openDocument('doc3.pdf')"
+      >
+        Graduation Certificate
+      </button>
+
+    </div> -->
+
+    <!-- Back Button -->
+    <!-- <div *ngIf="selectedDocument">
+
+      <button
+        pButton
+        label="Back to Documents"
+        icon="pi pi-arrow-left"
+        class="p-button-sm"
+        (click)="closeDocument()"
+      ></button>
+
+    </div>
+
+  </div> -->
+
+
+  <!-- RIGHT SIDE (Document Viewer) -->
+  <!-- <div class="w-2/3 pl-4 flex flex-col"> -->
+
+    <!-- Empty State -->
+    <!-- <div
+      *ngIf="!selectedDocument"
+      class="flex items-center justify-center h-full text-gray-400"
+    >
+      Select a document to preview
+    </div> -->
+
+    <!-- Document Preview -->
+    <!-- <iframe
+      *ngIf="selectedDocument"
+      [src]="selectedDocument"
+      class="w-full h-full border rounded"
+    ></iframe>
+
+  </div>
+
+</div>
+
+</p-dialog> -->

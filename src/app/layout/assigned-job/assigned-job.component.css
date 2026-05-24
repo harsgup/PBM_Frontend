@@ -1,0 +1,23 @@
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #e3f2fd;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 220px;
+}

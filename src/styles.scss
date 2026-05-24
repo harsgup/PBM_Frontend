@@ -1,0 +1,62 @@
+// @import "tailwindcss";
+@import "primeicons/primeicons.css";
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.min.css";
+
+// tailwind file added
+@import "./styles/tailwind.css";
+
+
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef2f7, #f8fafc);
+}
+
+.login-card {
+  width: 380px;
+  padding: 0;
+
+  ::ng-deep .p-card {
+    border-radius: 12px;
+  }
+
+  ::ng-deep .p-card-header {
+    text-align: center;
+    padding: 1.5rem 1rem 0.5rem;
+  }
+
+  ::ng-deep .p-card-body {
+    padding: 1.5rem 2rem 2rem;
+  }
+}
+
+.logo {
+  width: 140px;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
+.p-field {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #374151;
+  }
+}
+
+input[pInputText],
+::ng-deep .p-password input {
+  width: 100%;
+}
+
+button[pButton] {
+  margin-top: 0.5rem;
+  height: 44px;
+  font-weight: 600;
+}

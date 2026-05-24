@@ -1,0 +1,46 @@
+<div class="login-wrapper">
+  <p-card class="login-card">
+    <ng-template pTemplate="header">
+      <img src="assets/images/logo_new.png" class="logo" alt="Logo" />
+    </ng-template>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off">
+
+    <div class="p-field">
+  <label for="pin">PIS Number.</label>
+  <input
+    pInputText
+    id="pin"
+    type="text"
+    formControlName="pis"
+    placeholder="Enter PIS"
+    autocomplete="off"
+    class="w-full"
+  />
+</div>
+
+<div class="p-field">
+  <label for="password">Password</label>
+  <p-password
+    formControlName="password"
+    placeholder="Enter Password"
+    class="w-full"
+    [feedback]="false">
+  </p-password>
+</div>
+
+      <button
+        pButton
+        type="submit"
+        label="Login"
+        class="p-button-primary w-full"
+        [disabled]="loginForm.invalid">
+        
+      </button>
+
+
+<p-toast></p-toast>
+    </form>
+  </p-card>
+</div>
+

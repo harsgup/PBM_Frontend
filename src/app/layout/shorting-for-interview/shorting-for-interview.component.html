@@ -1,0 +1,147 @@
+<p-card class="pcard1" header="Shortlisting for Interview">
+
+<form [formGroup]="CyclePostForm">
+
+  <div class="filter-row">
+
+    <div class="p-field">
+      <label>Recruitment Cycle</label>
+      <p-dropdown
+        [options]="cycles"
+        formControlName="cycle"
+        placeholder="Select Cycle"
+        class="w-full">
+      </p-dropdown>
+    </div>
+
+    <div class="p-field">
+      <label>Post Name</label>
+      <p-dropdown
+        [options]="posts"
+        optionLabel="label"
+        optionValue="value"
+        formControlName="post"
+        placeholder="Select Post"
+        class="w-full"
+        [disabled]="!CyclePostForm.value.cycle">
+      </p-dropdown>
+    </div>
+
+    <div class="button-field">
+      <button
+        pButton
+        type="submit"
+        label="Show Candidates"
+        icon="pi pi-search"
+        [loading]="loading"
+        [disabled]="CyclePostForm.invalid"
+        (click)="showCandidates()">
+      </button>
+  </div>
+
+  </div>
+
+</form>
+
+</p-card>
+
+<p-card >
+
+<p-table
+  #dt
+  [value]="jobs"
+  [loading]="loading"
+  [(selection)]="selectedJobs"
+  dataKey="application_no"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[10,25,50]"
+  [globalFilterFields]="['application_no', 'committee_name', 'status']">
+
+  <ng-template pTemplate="caption">
+    <div class="table-header">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input 
+          pInputText 
+          type="text" 
+          (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+          placeholder="Search..." />
+      </span>
+      <div class="action-buttons">
+      <button
+      *ngIf="selectedJobs.length > 0"
+      pButton
+      [label]="isAllSelectedShortlisted() ? 'Revert' : 'Shortlist'"
+      icon="pi pi-check"
+      class="p-button-success"
+      (click)="confirmShortlist()">
+    </button>
+
+      <button
+      pButton
+      label="Export PDF"
+      icon="pi pi-file-pdf"
+      class="p-button-danger"
+      (click)="generatePdf()"
+    >
+    </button>
+    </div>
+
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+      
+    <tr>
+      <th style="width:3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+      <th pSortableColumn="application_no">
+        Application No <p-sortIcon field="application_no"></p-sortIcon>
+        <p-columnFilter type="text" field="application_no" display="menu"></p-columnFilter>
+      </th>
+      <th>
+        Candidate Name 
+        <p-columnFilter type="text" field="cycle" display="menu"></p-columnFilter>
+      </th>
+      <th pSortableColumn="category">
+        Category <p-sortIcon field="category"></p-sortIcon>
+        <p-columnFilter type="text" field="category" display="menu"></p-columnFilter>
+      </th>
+      <th pSortableColumn="marks">
+        Marks <p-sortIcon field="marks"></p-sortIcon>
+        <p-columnFilter type="text" field="marks" display="menu"></p-columnFilter>
+      </th>
+      <th>Screening Remark</th>
+      <th pSortableColumn="status">
+        Status <p-sortIcon field="status"></p-sortIcon>
+        <p-columnFilter type="text" field="status" display="menu"></p-columnFilter>
+      </th>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-job>
+    <tr [ngClass]="{'row-completed': job.status === 'complete'}">
+      <td><p-tableCheckbox [value]="job"></p-tableCheckbox></td>
+      <td>{{ job.application_no }}</td>
+      <td>{{ job.cycle }}</td>
+      <td>{{ job.post_name }}</td>
+      <td>{{job.committee_name}}</td>
+      <td>{{ job.approver_remarks }}</td>
+      <td class="text-center">
+      <div class="status-cell">
+        <p-tag 
+          [severity]="job.status === 'complete' ? 'success' : 'warning'" 
+          [value]="job.status | uppercase">
+        </p-tag>
+      </div>
+      </td>
+
+    </tr>
+  </ng-template>
+
+</p-table>
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+</p-card>
+
+
+
