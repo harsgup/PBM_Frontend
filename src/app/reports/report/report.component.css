@@ -1,0 +1,57 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.p-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.p-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Custom Table Overrides */
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+  border-color: #e2e8f0;
+}
+
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+  padding: 0.75rem 1rem;
+  border-color: #f1f5f9;
+}
+
+::ng-deep .p-datatable .p-paginator {
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 0.5rem;
+}
+
+/* Shadow effects */
+.shadow-premium {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+/* Truncate remarks */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

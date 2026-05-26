@@ -39,7 +39,7 @@ const routes: Routes = [
      
     
 
-    { path: 'reports', component: ReportComponent }
+    { path: 'reports', component: ReportComponent, canActivate: [AdminGuard] }
   ]
 },
   { path: 'user_dashboard', component: UserDashboardComponent},

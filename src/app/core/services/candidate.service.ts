@@ -50,6 +50,9 @@ export class CandidateDetailService {
         );
     }
 
-
+    getSummaryReport(cycle: string, postName: string): Observable<any> {
+        const params = new HttpParams().set('cycle', cycle).set('post_name', postName);
+        return this.http.get<any>(`${this.baseUrl}/admin/reports/summary`, { params });
+    }
 }
 
