@@ -29,8 +29,14 @@
             <th class="px-4 py-3 text-left">Application No</th>
             <th class="px-4 py-3 text-left">Candidate Name</th>
             <th class="px-4 py-3 text-left">Father Name</th>
-            <th class="px-4 py-3 text-left">Status</th>
-            <th class="px-4 py-3 text-left">Remarks</th>
+            <ng-container *ngIf="userRole === 'approver'">
+                <th class="px-4 py-3 text-left">Verifier 1 Status</th>
+                <th class="px-4 py-3 text-left">Verifier 1 Remarks</th>
+                <th class="px-4 py-3 text-left">Verifier 2 Status</th>
+                <th class="px-4 py-3 text-left">Verifier 2 Remarks</th>
+            </ng-container>
+            <th class="px-4 py-3 text-left">{{ userRole === 'approver' ? 'Approver Status' : 'Status' }}</th>
+            <th class="px-4 py-3 text-left">{{ userRole === 'approver' ? 'Approver Remarks' : 'Remarks' }}</th>
             <th class="px-4 py-3 text-center w-[120px]">Action</th>
         </tr>
     </ng-template>
@@ -41,6 +47,20 @@
             <td class="px-4 py-3 font-medium text-[poppins]">{{ row.application_no }}</td>
             <td class="px-4 py-3">{{row.candidate_name}}</td>
             <td class="px-4 py-3">{{row.father_name}}</td>
+            <ng-container *ngIf="userRole === 'approver'">
+                <td class="px-4 py-3">
+                    <status-badge [status]="row.verifier1_status"></status-badge>
+                </td>
+                <td class="px-4 py-3 text-gray-600">
+                    {{row.verifier1_remarks || 'Action Not Taken'}}
+                </td>
+                <td class="px-4 py-3">
+                    <status-badge [status]="row.verifier2_status"></status-badge>
+                </td>
+                <td class="px-4 py-3 text-gray-600">
+                    {{row.verifier2_remarks || 'Action Not Taken'}}
+                </td>
+            </ng-container>
             <td class="px-4 py-3">
                 <status-badge [status]="row.verifier_status"></status-badge>
             </td>
@@ -61,7 +81,7 @@
      </ng-template>
      <ng-template pTemplate="emptymessage">
         <tr>
-            <td colspan="7" class="text-center py-8 text-slate-500 font-semibold text-base bg-slate-50 border border-slate-100 rounded-lg">
+            <td [attr.colspan]="userRole === 'approver' ? 11 : 7" class="text-center py-8 text-slate-500 font-semibold text-base bg-slate-50 border border-slate-100 rounded-lg">
                 <i class="pi pi-inbox block text-3xl mb-2 text-slate-400"></i>
                 No candidates found in cycle {{ cycle }} for you
             </td>

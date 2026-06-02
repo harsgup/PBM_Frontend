@@ -77,11 +77,12 @@ export class SidebarComponent implements OnInit {
         ]
       }] : []),
 
-      ...(isAdmin ? [{
+      ...(isAdmin || isVerifier || isApprover ? [{
         label: 'Reports',
         icon: 'pi pi-chart-bar',
         items: [
-          { label: 'Summary Reports', routerLink: 'reports' }
+          ...(isAdmin ? [{ label: 'Summary Reports', routerLink: 'reports' }] : []),
+          ...(isVerifier || isApprover ? [{ label: 'Administrative Screening Report', routerLink: 'reports/administrative-screening' }] : [])
         ]
       }] : [])
     ];

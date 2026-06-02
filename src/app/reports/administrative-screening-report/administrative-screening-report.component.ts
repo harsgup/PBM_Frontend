@@ -20,7 +20,7 @@ interface DropdownOption {
 }
 
 @Component({
-  selector: 'app-report',
+  selector: 'app-administrative-screening-report',
   standalone: true,
   imports: [
     CommonModule,
@@ -33,10 +33,10 @@ interface DropdownOption {
     ToastModule
   ],
   providers: [MessageService],
-  templateUrl: './report.component.html',
-  styleUrl: './report.component.css'
+  templateUrl: './administrative-screening-report.component.html',
+  styleUrl: './administrative-screening-report.component.css'
 })
-export class ReportComponent implements OnInit {
+export class AdministrativeScreeningReportComponent implements OnInit {
 
   searchForm!: FormGroup;
   loading = false;
@@ -52,6 +52,9 @@ export class ReportComponent implements OnInit {
   postCode = 'N/A';
   postName = '';
   cycle = '';
+  userName = '';
+  userDesignation = '';
+  userRole = '';
 
   // Pagination and rows
   rowsPerPage = 10;
@@ -97,7 +100,7 @@ export class ReportComponent implements OnInit {
     this.loading = true;
     const { cycle, post } = this.searchForm.value;
 
-    this.candidateService.getSummaryReport(cycle, post).subscribe({
+    this.candidateService.getAdministrativeScreeningReport(cycle, post).subscribe({
       next: (res) => {
         this.reportStatus = res.status;
         this.statusMessage = res.message;
@@ -109,6 +112,9 @@ export class ReportComponent implements OnInit {
           this.postCode = res.post_code || 'N/A';
           this.postName = res.post_name || '';
           this.cycle = res.cycle || '';
+          this.userName = res.user_name || '';
+          this.userDesignation = res.user_designation || '';
+          this.userRole = res.user_role || '';
           this.mS.add({
             severity: 'success',
             summary: 'Success',
@@ -156,8 +162,8 @@ export class ReportComponent implements OnInit {
       row.application_no,
       row.candidate_name,
       row.category_and_subcategory,
-      row.approver_status,
-      row.approver_remarks
+      row.status,
+      row.remarks
     ]);
 
     const csvContent = "\ufeff" + [headers.join(','), ...rows.map(e => e.map(val => {
@@ -242,8 +248,8 @@ export class ReportComponent implements OnInit {
       row.application_no,
       row.candidate_name,
       row.category_and_subcategory,
-      row.approver_status,
-      row.approver_remarks
+      row.status,
+      row.remarks
     ]);
 
     autoTable(doc, {
@@ -269,7 +275,7 @@ export class ReportComponent implements OnInit {
       }
     });
 
-    // Draw multi-signature block at bottom
+    // Draw signature block at bottom
     const finalY = (doc as any).lastAutoTable.finalY + 12;
     const pageHeight = doc.internal.pageSize.height;
     
@@ -279,43 +285,16 @@ export class ReportComponent implements OnInit {
       drawY = 20;
     }
     
-    const v1List = Array.from(new Set(this.reportData.map(r => r.verifier1_name).filter(Boolean)));
-    const v1Desigs = Array.from(new Set(this.reportData.map(r => r.verifier1_designation).filter(Boolean)));
-    const v2List = Array.from(new Set(this.reportData.map(r => r.verifier2_name).filter(Boolean)));
-    const v2Desigs = Array.from(new Set(this.reportData.map(r => r.verifier2_designation).filter(Boolean)));
-    const appList = Array.from(new Set(this.reportData.map(r => r.approver_name).filter(Boolean)));
-    const appDesigs = Array.from(new Set(this.reportData.map(r => r.approver_designation).filter(Boolean)));
-
-    const v1Name = v1List.join(', ') || 'N/A';
-    const v1Desig = v1Desigs.join(', ') || 'N/A';
-    const v2Name = v2List.join(', ') || 'N/A';
-    const v2Desig = v2Desigs.join(', ') || 'N/A';
-    const appName = appList.join(', ') || 'N/A';
-    const appDesig = appDesigs.join(', ') || 'N/A';
-
+    const isApproverRole = this.userRole === 'approver';
+    const footerTitle = isApproverRole ? 'Approved By:' : 'Verified By:';
+    
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    
-    // Verifier 1
-    doc.text('Verified By (Verifier 1):', 14, drawY);
+    doc.text(footerTitle, 14, drawY);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${v1Name}`, 14, drawY + 5);
-    doc.text(`Designation: ${v1Desig}`, 14, drawY + 10);
-    
-    // Verifier 2
-    doc.setFont('helvetica', 'bold');
-    doc.text('Verified By (Verifier 2):', 78, drawY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${v2Name}`, 78, drawY + 5);
-    doc.text(`Designation: ${v2Desig}`, 78, drawY + 10);
-    
-    // Approver
-    doc.setFont('helvetica', 'bold');
-    doc.text('Approved By (Approver):', 142, drawY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${appName}`, 142, drawY + 5);
-    doc.text(`Designation: ${appDesig}`, 142, drawY + 10);
+    doc.text(`Name: ${this.userName || '________________'}`, 14, drawY + 6);
+    doc.text(`Designation: ${this.userDesignation || '________________'}`, 14, drawY + 12);
 
     doc.save(`Candidate_Verification_Sheet_${cycle}_${post}.pdf`.replace(/\s+/g, '_'));
   }

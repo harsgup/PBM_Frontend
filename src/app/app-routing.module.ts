@@ -5,6 +5,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import {DashboardLayoutComponent} from './layout/dashboard-layout/dashboard-layout.component'
 import {ReportComponent} from './reports/report/report.component'
+import { AdministrativeScreeningReportComponent } from './reports/administrative-screening-report/administrative-screening-report.component';
 import { UsersComponent } from './layout/users/users.component';
 import { AddUserComponent } from './layout/add-user/add-user.component';
 import { AssignJobComponent } from './layout/assign-jobs/assign-jobs.component';
@@ -39,7 +40,8 @@ const routes: Routes = [
      
     
 
-    { path: 'reports', component: ReportComponent, canActivate: [AdminGuard] }
+    { path: 'reports', component: ReportComponent, canActivate: [AdminGuard] },
+    { path: 'reports/administrative-screening', component: AdministrativeScreeningReportComponent, canActivate: [AuthGuard] }
   ]
 },
   { path: 'user_dashboard', component: UserDashboardComponent},

@@ -40,6 +40,7 @@ export class CandidatesListComponent implements OnInit {
   cycle = '';
   postName = '';
   userId = 0;
+  userRole = '';
 
   // Dialog State Variables
   reviewDialogVisible = false;
@@ -68,9 +69,9 @@ export class CandidatesListComponent implements OnInit {
       }
     });
 
-    const userRole = this.authService.getRole();
+    this.userRole = this.authService.getRole() || '';
     const filteredStatuses = Object.values(CandidateStatus).filter(status => {
-      if (userRole === 'approver' && status === CandidateStatus.ON_HOLD) {
+      if (this.userRole === 'approver' && status === CandidateStatus.ON_HOLD) {
         return false;
       }
       return true;
