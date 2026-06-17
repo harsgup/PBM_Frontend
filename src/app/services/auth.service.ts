@@ -17,6 +17,10 @@ export class AuthService {
   return this.http.post<any>(`${this.baseUrl}/auth/login`, payload);
 }
 
+  refreshToken() {
+    return this.http.post<any>(`${this.baseUrl}/auth/refresh`, {});
+  }
+
   getToken(): string | null {
     return localStorage.getItem('access_token');
   }

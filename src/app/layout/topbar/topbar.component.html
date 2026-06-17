@@ -15,3 +15,38 @@
     <button pButton icon="pi pi-sign-out" class="p-button-text" (click)="logout()"></button>
   </div>
 </div>
+
+<div *ngIf="showExtendPrompt" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all duration-300">
+  <div class="bg-slate-900 border border-slate-700 text-white rounded-2xl p-6 w-full max-w-md shadow-2xl mx-4 transform transition-all">
+    <!-- Icon & Header -->
+    <div class="flex items-center space-x-4 mb-4">
+      <div class="p-3 bg-amber-500/25 text-amber-400 rounded-full flex items-center justify-center">
+        <i class="pi pi-exclamation-triangle text-2xl"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold tracking-wide text-white">Session Expiring</h3>
+        <p class="text-slate-400 text-sm mt-0.5">For your security, you will be logged out soon.</p>
+      </div>
+    </div>
+    
+    <!-- Timer Countdown -->
+    <div class="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 my-5 text-center">
+      <span class="text-slate-400 text-xs uppercase tracking-wider block mb-1">Time Remaining</span>
+      <span class="text-3xl font-mono font-extrabold text-amber-400 block tracking-widest animate-pulse">{{ sessionTime }}</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex space-x-3 mt-6">
+      <button 
+        class="flex-1 py-3 px-4 rounded-xl border border-slate-700 text-slate-300 font-semibold hover:bg-slate-800 transition-all active:scale-95 text-sm"
+        (click)="logout()">
+        Log Out
+      </button>
+      <button 
+        class="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
+        (click)="extendSession()">
+        Stay Logged In
+      </button>
+    </div>
+  </div>
+</div>
