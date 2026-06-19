@@ -63,6 +63,21 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
       remarks: ['']
     });
 
+    this.reviewForm.get('status')!.valueChanges.subscribe(status => {
+      if (status && status !== 'PENDING') {
+        const currentRemarks = this.reviewForm.get('remarks')!.value;
+        if (!currentRemarks || currentRemarks.trim() === '') {
+          if (status === CandidateStatus.VERIFIED) {
+            this.reviewForm.patchValue({ remarks: 'Verified by user' });
+          } else if (status === CandidateStatus.REJECTED) {
+            this.reviewForm.patchValue({ remarks: 'Rejected by user' });
+          } else if (status === CandidateStatus.ON_HOLD) {
+            this.reviewForm.patchValue({ remarks: 'Onhold by user' });
+          }
+        }
+      }
+    });
+
     const userRole = this.auth.getRole();
     const filteredStatuses = Object.values(CandidateStatus).filter(status => {
       if (userRole === 'approver' && status === CandidateStatus.ON_HOLD) {
@@ -94,12 +109,22 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
     } else {
       currentStatus = currentStatus.trim().toUpperCase();
     }
-    const currentRemarks = candidateObj?.verifier_remarks;
+    let currentRemarks = candidateObj?.verifier_remarks || '';
+
+    if (currentStatus !== 'PENDING' && currentRemarks.trim() === '') {
+      if (currentStatus === 'VERIFIED') {
+        currentRemarks = 'Verified by user';
+      } else if (currentStatus === 'REJECTED') {
+        currentRemarks = 'Rejected by user';
+      } else if (currentStatus === 'ON_HOLD') {
+        currentRemarks = 'Onhold by user';
+      }
+    }
 
     this.reviewForm.reset({
       status: currentStatus,
-      remarks: currentRemarks || ''
-    });
+      remarks: currentRemarks
+    }, { emitEvent: false });
 
     const normalizedStatus = String(currentStatus || '').toUpperCase();
     const isCompleted = 
@@ -118,14 +143,47 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
   // ------------------------------------------//
   // -----------Navigation methods-----------//
   // ------------------------------------------//
+  hasPreviousPending(): boolean {
+    if (!this.candidates || this.currentIndex === -1) return false;
+    for (let i = this.currentIndex - 1; i >= 0; i--) {
+      const status = String(this.candidates[i]?.verifier_status || '').toUpperCase();
+      if (status === 'PENDING') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasNextPending(): boolean {
+    if (!this.candidates || this.currentIndex === -1) return false;
+    for (let i = this.currentIndex + 1; i < this.candidates.length; i++) {
+      const status = String(this.candidates[i]?.verifier_status || '').toUpperCase();
+      if (status === 'PENDING') {
+        return true;
+      }
+    }
+    return false;
+  }
+
   nextCandidate() {
-    if (this.currentIndex < this.candidates.length -1){
-      this.navigate.emit(this.currentIndex + 1);
+    if (!this.candidates || this.currentIndex === -1) return;
+    for (let i = this.currentIndex + 1; i < this.candidates.length; i++) {
+      const status = String(this.candidates[i]?.verifier_status || '').toUpperCase();
+      if (status === 'PENDING') {
+        this.navigate.emit(i);
+        break;
+      }
     }
   }
+
   previousCandidate() {
-    if (this.currentIndex > 0){
-      this.navigate.emit(this.currentIndex -1);
+    if (!this.candidates || this.currentIndex === -1) return;
+    for (let i = this.currentIndex - 1; i >= 0; i--) {
+      const status = String(this.candidates[i]?.verifier_status || '').toUpperCase();
+      if (status === 'PENDING') {
+        this.navigate.emit(i);
+        break;
+      }
     }
   }
 
@@ -137,9 +195,21 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
       return;
       
     const status = this.reviewForm.value.status;
-    const remarks = this.reviewForm.value.remarks || '';
+    let remarks = this.reviewForm.value.remarks || '';
+    if (!remarks || remarks.trim() === '') {
+      if (status === CandidateStatus.VERIFIED) {
+        remarks = 'Verified by user';
+      } else if (status === CandidateStatus.REJECTED) {
+        remarks = 'Rejected by user';
+      } else if (status === CandidateStatus.ON_HOLD) {
+        remarks = 'Onhold by user';
+      }
+    }
     
-    this.service.submitReview(this.applicationNo, status, remarks).subscribe({
+    const candidateObj = this.candidates.find(c => c.application_no === this.applicationNo);
+    const jobId = candidateObj?.id;
+    
+    this.service.submitReview(this.applicationNo, status, remarks, jobId).subscribe({
       next: (res) => {
         this.mS.add({
           severity: 'success',

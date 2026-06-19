@@ -43,10 +43,10 @@ export class CandidateDetailService {
         );
     }
 
-    submitReview(applicationNo: string, status: string, remarks: string): Observable<any> {
+    submitReview(applicationNo: string, status: string, remarks: string, jobId?: number): Observable<any> {
         return this.http.post<any>(
             `${this.baseUrl}/candidates/submit_review`,
-            { application_no: applicationNo, status, remarks }
+            { application_no: applicationNo, status, remarks, job_id: jobId }
         );
     }
 

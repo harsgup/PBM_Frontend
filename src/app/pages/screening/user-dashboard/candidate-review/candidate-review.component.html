@@ -160,8 +160,8 @@
         </div>
         <!-- Navigation -->
         <div class="flex justify-between mt-3">
-        <button pButton label="Previous" (click)="previousCandidate()" [disabled]="currentIndex <= 0"></button>
-        <button pButton label="Next" (click)="nextCandidate()" [disabled]="currentIndex >= candidates.length - 1"></button>
+        <button pButton label="Previous" (click)="previousCandidate()" [disabled]="!hasPreviousPending()"></button>
+        <button pButton label="Next" (click)="nextCandidate()" [disabled]="!hasNextPending()"></button>
         </div>
     </div>
     </div>
