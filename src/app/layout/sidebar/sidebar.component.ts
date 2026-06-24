@@ -59,14 +59,6 @@ export class SidebarComponent implements OnInit {
         ]
       }] : []),
 
-      ...(isAdmin ? [{
-        label: 'Interview Section',
-        icon: 'pi pi-comments',
-        items: [
-          { label: 'Board Formation', icon: 'pi pi-users', routerLink: 'admin/board-formation' }
-        ]
-      }] : []),
-
       ...(isAdmin || isVerifier || isApprover ? [{
         label: 'Screening - Administrative',
         icon: 'pi pi-check-square',
@@ -88,6 +80,16 @@ export class SidebarComponent implements OnInit {
         icon: 'pi pi-desktop',
         items: [
           { label: 'Shortlist-for-Interview', icon:'pi pi-lightbulb', routerLink: 'screening/shortlisting' }
+        ]
+      }] : []),
+
+      ...(isAdmin ? [{
+        label: 'Interview Section',
+        icon: 'pi pi-comments',
+        items: [
+          { label: 'Board Formation', icon: 'pi pi-users', routerLink: 'admin/board-formation' },
+          { label: 'Interview Boards', icon: 'pi pi-table', routerLink: 'admin/interview-boards' },
+          { label: 'Form and Formats', icon: 'pi pi-file', routerLink: 'admin/form-formats' }
         ]
       }] : []),
 

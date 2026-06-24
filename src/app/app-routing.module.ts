@@ -15,6 +15,8 @@ import { AssignedJobComponent } from './layout/assigned-job/assigned-job.compone
 import { BuildJobComponent } from './layout/build-job/build-job.component';
 import { TechnicalCommitteeComponent } from './layout/technical-committee/technical-committee.component';
 import { BoardFormationComponent } from './layout/board-formation/board-formation.component';
+import { InterviewBoardsComponent } from './layout/interview-boards/interview-boards.component';
+import { FormFormatsComponent } from './layout/form-formats/form-formats.component';
 import { TechnicalScreeningComponent } from './layout/technical/technical-screening/technical-screening.component';
 import { ShortingForInterviewComponent } from './layout/shorting-for-interview/shorting-for-interview.component';
 import { DashboardRedirectComponent } from './layout/dashboard-redirect/dashboard-redirect.component';
@@ -36,6 +38,8 @@ const routes: Routes = [
     { path: 'admin/build-jobs', component: BuildJobComponent,canActivate:[AdminGuard] },
     { path: 'admin/technical-committee', component: TechnicalCommitteeComponent,canActivate:[AdminGuard] },
     { path: 'admin/board-formation', component: BoardFormationComponent, canActivate: [AdminGuard] },
+    { path: 'admin/interview-boards', component: InterviewBoardsComponent, canActivate: [AdminGuard] },
+    { path: 'admin/form-formats', component: FormFormatsComponent, canActivate: [AdminGuard] },
     { path: 'screening/technical', component: TechnicalScreeningComponent,canActivate:[AuthGuard] },
     { path: 'screening/shortlisting', component:ShortingForInterviewComponent,canActivate:[AuthGuard]},
 

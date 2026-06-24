@@ -44,6 +44,7 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
   candidateDetails!: CandidateDetails;
   selectedDocument: string | null = null;
   reviewForm!: FormGroup;
+  zoom = 1;
   
   statusOptions = Object.values(CandidateStatus).map(status => ({
     label: CandidateStatusLabel[status],
@@ -139,6 +140,7 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
     }
 
     this.selectedDocument = null;
+    this.zoom = 1;
   }
   // ------------------------------------------//
   // -----------Navigation methods-----------//
@@ -189,6 +191,21 @@ export class CandidateReviewComponent implements OnChanges, OnInit {
 
   selectDocument(url: string) {
     this.selectedDocument = url;
+    this.zoom = 1;
+  }
+
+  zoomIn() {
+    this.zoom += 0.2;
+  }
+
+  zoomOut() {
+    if (this.zoom > 0.4) {
+      this.zoom -= 0.2;
+    }
+  }
+
+  resetZoom() {
+    this.zoom = 1;
   }
   submitReview() {
     if(this.reviewForm.invalid || this.reviewForm.disabled || !this.applicationNo) 

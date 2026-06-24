@@ -1,0 +1,171 @@
+.interview-boards-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+:host ::ng-deep .premium-card {
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.shadow-button {
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+  transition: all 0.2s ease;
+}
+
+.shadow-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+/* Parent Table Styles */
+:host ::ng-deep .premium-table .p-datatable-thead > tr > th {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+  padding: 1rem;
+}
+
+:host ::ng-deep .premium-table .p-datatable-tbody > tr {
+  transition: background-color 0.2s;
+}
+
+:host ::ng-deep .premium-table .p-datatable-tbody > tr:hover {
+  background-color: #f1f5f9;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-blue-900 {
+  color: #1e3a8a;
+}
+
+.member-count-badge {
+  background-color: #eff6ff;
+  color: #2563eb;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #dbeafe;
+}
+
+/* Expansion Table Styles */
+.expansion-cell {
+  background-color: #fafbfc;
+  padding: 1.5rem !important;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.expansion-content {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+.expansion-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+  border-left: 4px solid #3b82f6;
+  padding-left: 0.5rem;
+}
+
+.inner-table {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .inner-table .p-datatable-thead > tr > th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+:host ::ng-deep .inner-table .p-datatable-tbody > tr > td {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Chairperson row highlights */
+.chair-row {
+  background-color: #f5f3ff !important;
+}
+
+.chair-row:hover {
+  background-color: #ede9fe !important;
+}
+
+.type-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.chair-badge {
+  background-color: #ddd6fe;
+  color: #5b21b6;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+/* Empty Placeholder */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state-text {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

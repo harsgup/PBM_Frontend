@@ -1,0 +1,80 @@
+<p-toast></p-toast>
+
+<div class="form-formats-container">
+  <p-card header="Form & Formats Generator" styleClass="premium-card">
+    <div class="subtitle-text">
+      Select the Recruitment Cycle and Post to generate required interview sheets and forms.
+    </div>
+
+    <!-- Selection Section -->
+    <form [formGroup]="selectionForm" class="selection-grid">
+      <div class="p-field">
+        <label for="cycle" class="form-label">Recruitment Cycle</label>
+        <p-dropdown
+          id="cycle"
+          [options]="cycles"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="cycle"
+          placeholder="Select Cycle"
+          appendTo="body"
+          [style]="{ width: '100%' }">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label for="post" class="form-label">Post Name</label>
+        <p-dropdown
+          id="post"
+          [options]="posts"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="post_name"
+          placeholder="Select Post"
+          appendTo="body"
+          [disabled]="!selectionForm.value.cycle"
+          [style]="{ width: '100%' }">
+        </p-dropdown>
+      </div>
+    </form>
+
+    <!-- Form Generation Options -->
+    <div *ngIf="selectionForm.valid" class="formats-list-section">
+      <div class="section-header">
+        <h3 class="gradient-title">Available Templates</h3>
+      </div>
+
+      <div class="template-grid">
+        <div class="template-card">
+          <div class="template-icon-wrapper">
+            <i class="pi pi-file-pdf template-icon"></i>
+          </div>
+          <div class="template-info">
+            <h4 class="template-title">Interview Attendance Sheet</h4>
+            <p class="template-description">
+              Generates a printable attendance sheet containing candidate application number, name, father's name, category, and a signature block. Includes a sign-off area for the Interview Chairperson.
+            </p>
+          </div>
+          <div class="template-actions">
+            <button
+              pButton
+              type="button"
+              label="Generate PDF"
+              icon="pi pi-download"
+              class="p-button-primary shadow-button"
+              [loading]="loading"
+              (click)="generateAttendanceSheet()">
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty Selection State -->
+    <div *ngIf="!selectionForm.valid" class="empty-selection-placeholder">
+      <i class="pi pi-fileplaceholder placeholder-icon"></i>
+      <span class="placeholder-text">Please select a Recruitment Cycle and Post Name above to display available document formats.</span>
+    </div>
+
+  </p-card>
+</div>

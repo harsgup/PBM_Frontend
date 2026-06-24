@@ -10,9 +10,7 @@ import { MessageService } from 'primeng/api';
 import { map, Observable } from 'rxjs';
 
 import { CandidateDetailService } from '../../core/services/candidate.service';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import { LOGO_BASE64 } from '../../core/constants/logo-base64';
+import { PdfService } from '../../services/pdf.service';
 
 interface DropdownOption {
   label: string;
@@ -65,7 +63,8 @@ export class ReportComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private candidateService: CandidateDetailService,
-    private mS: MessageService
+    private mS: MessageService,
+    private pdfService: PdfService
   ) {}
 
   ngOnInit(): void {
@@ -179,63 +178,34 @@ export class ReportComponent implements OnInit {
     if (!this.reportData || this.reportData.length === 0) return;
 
     const { cycle, post } = this.searchForm.value;
-    const doc = new jsPDF('portrait', 'mm', 'a4');
     
-    // Draw Header border
-    doc.rect(14, 8, 182, 28);
+    // 1. Initialize Document (Portrait)
+    const doc = this.pdfService.createDocument('portrait');
     
-    // Draw Logo
-    try {
-      doc.addImage(LOGO_BASE64, 'PNG', 16.5, 9, 23, 26);
-    } catch (e) {
-      console.warn("Failed to render logo:", e);
-    }
+    // 2. Draw Header
+    this.pdfService.drawHeader(
+      doc,
+      `CEPTAM Advt.: ${cycle}`,
+      'ADMINISTRATIVE SCREENING COMMITTEE',
+      'CANDIDATE VERIFICATION SHEET',
+      'No. RD/PBM/01',
+      'portrait'
+    );
     
-    // Vertical line after logo
-    doc.line(42, 8, 42, 36);
+    // 3. Draw Sub-Header
+    const fields = [
+      { label: 'Post Code', value: '', width: 18 },
+      { label: '', value: this.postCode, width: 22 },
+      { label: 'Post Name', value: '', width: 18 },
+      { label: '', value: this.postName, width: 50 },
+      { label: 'Cycle', value: '', width: 14 },
+      { label: '', value: cycle, width: 28 },
+      { label: 'Date', value: '', width: 12 },
+      { label: '', value: '', width: 20 }
+    ];
+    this.pdfService.drawSubHeader(doc, fields, 'portrait');
     
-    // Center Header Text
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text('CEPTAM Advt. (PROJECT BASED MANPOWER)', 107, 15, { align: 'center' });
-    doc.setFontSize(10);
-    doc.text('ADMINISTRATIVE SCREENING COMMITTEE', 107, 21, { align: 'center' });
-    doc.setFontSize(11);
-    doc.text('CANDIDATE VERIFICATION SHEET', 107, 27, { align: 'center' });
-    
-    // Vertical line before doc number
-    doc.line(172, 8, 172, 36);
-    
-    // Doc Number (Right aligned)
-    doc.setFontSize(8);
-    doc.text('No. RD/PBM/01', 194, 21, { align: 'right' });
-    
-    // Sub-header Row (Post Code, Post Name, Date)
-    doc.rect(14, 36, 182, 8);
-    
-    // Gray background for labels
-    doc.setFillColor(240, 240, 240);
-    doc.rect(14, 36, 20, 8, 'F');
-    doc.rect(60, 36, 22, 8, 'F');
-    doc.rect(145, 36, 12, 8, 'F');
-    
-    // Text inside sub-header
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Post Code', 24, 41, { align: 'center' });
-    doc.text(this.postCode, 47, 41, { align: 'center' });
-    doc.text('Post Name', 71, 41, { align: 'center' });
-    doc.text(this.postName, 84, 41);
-    doc.text('Date', 151, 41, { align: 'center' });
-    doc.text(new Date().toLocaleDateString(), 176, 41, { align: 'center' });
-    
-    // Vertical lines in sub-header
-    doc.line(34, 36, 34, 44);
-    doc.line(60, 36, 60, 44);
-    doc.line(82, 36, 82, 44);
-    doc.line(145, 36, 145, 44);
-    doc.line(157, 36, 157, 44);
-    
+    // 4. Draw Table
     const headers = [['SL. No.', 'Application No.', 'Candidate Name', 'Category and Sub-Category', 'Verification Status', 'Remarks']];
     const data = this.reportData.map((row, index) => [
       index + 1,
@@ -246,39 +216,25 @@ export class ReportComponent implements OnInit {
       row.approver_remarks
     ]);
 
-    autoTable(doc, {
-      startY: 48,
-      head: headers,
-      body: data,
-      theme: 'grid',
-      headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold', halign: 'center', lineWidth: 0.1, lineColor: [0, 0, 0] },
-      styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0] },
-      columnStyles: {
-        0: { cellWidth: 12, halign: 'center' },
-        1: { cellWidth: 32, halign: 'center' },
-        2: { cellWidth: 40 },
-        3: { cellWidth: 35 },
-        4: { cellWidth: 30, halign: 'center' },
-        5: { cellWidth: 33 }
-      },
-      didDrawPage: (data) => {
-        const str = `Page ${doc.getNumberOfPages()}`;
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text(str, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10);
-      }
-    });
-
-    // Draw multi-signature block at bottom
-    const finalY = (doc as any).lastAutoTable.finalY + 12;
-    const pageHeight = doc.internal.pageSize.height;
+    const columnStyles = {
+      0: { cellWidth: 12, halign: 'center' },
+      1: { cellWidth: 32, halign: 'center' },
+      2: { cellWidth: 40 },
+      3: { cellWidth: 35 },
+      4: { cellWidth: 30, halign: 'center' },
+      5: { cellWidth: 33 }
+    };
     
-    let drawY = finalY;
-    if (finalY + 20 > pageHeight) {
-      doc.addPage();
-      drawY = 20;
+    this.pdfService.drawTable(doc, headers, data, 48, columnStyles);
+
+    // 5. Draw Page Numbers
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      this.pdfService.drawPageNumber(doc, i, totalPages);
     }
     
+    // 6. Draw Signature Block at the bottom of the last page
     const v1List = Array.from(new Set(this.reportData.map(r => r.verifier1_name).filter(Boolean)));
     const v1Desigs = Array.from(new Set(this.reportData.map(r => r.verifier1_designation).filter(Boolean)));
     const v2List = Array.from(new Set(this.reportData.map(r => r.verifier2_name).filter(Boolean)));
@@ -293,30 +249,17 @@ export class ReportComponent implements OnInit {
     const appName = appList.join(', ') || 'N/A';
     const appDesig = appDesigs.join(', ') || 'N/A';
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    
-    // Verifier 1
-    doc.text('Verified By (Verifier 1):', 14, drawY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${v1Name}`, 14, drawY + 5);
-    doc.text(`Designation: ${v1Desig}`, 14, drawY + 10);
-    
-    // Verifier 2
-    doc.setFont('helvetica', 'bold');
-    doc.text('Verified By (Verifier 2):', 78, drawY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${v2Name}`, 78, drawY + 5);
-    doc.text(`Designation: ${v2Desig}`, 78, drawY + 10);
-    
-    // Approver
-    doc.setFont('helvetica', 'bold');
-    doc.text('Approved By (Approver):', 142, drawY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${appName}`, 142, drawY + 5);
-    doc.text(`Designation: ${appDesig}`, 142, drawY + 10);
+    const signers = [
+      { role: 'Verified By (Verifier 1)', name: v1Name, designation: v1Desig },
+      { role: 'Verified By (Verifier 2)', name: v2Name, designation: v2Desig },
+      { role: 'Approved By (Approver)', name: appName, designation: appDesig }
+    ];
 
+    doc.setPage(totalPages);
+    const finalY = (doc as any).lastAutoTable.finalY + 12;
+    this.pdfService.drawSignatureBlock(doc, signers, 'portrait', finalY);
+
+    // 7. Save Document
     doc.save(`Candidate_Verification_Sheet_${cycle}_${post}.pdf`.replace(/\s+/g, '_'));
   }
 }

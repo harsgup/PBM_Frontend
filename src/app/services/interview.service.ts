@@ -17,6 +17,14 @@ export interface InterviewCommittee {
   members: InterviewMember[];
 }
 
+export interface ShortlistedCandidate {
+  application_no: string;
+  candidate_name: string | null;
+  father_name: string | null;
+  category: string | null;
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class InterviewService {
   private baseUrl = env.apiUrl;
@@ -32,4 +40,26 @@ export class InterviewService {
       `${this.baseUrl}/interview/committee?cycle=${encodeURIComponent(cycle)}&post_name=${encodeURIComponent(postName)}`
     );
   }
+
+  getInterviewCommittees(cycle?: string, postName?: string): Observable<InterviewCommittee[]> {
+    let url = `${this.baseUrl}/interview/committees`;
+    const params: string[] = [];
+    if (cycle) params.push(`cycle=${encodeURIComponent(cycle)}`);
+    if (postName) params.push(`post_name=${encodeURIComponent(postName)}`);
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+    return this.http.get<InterviewCommittee[]>(url);
+  }
+
+  deleteInterviewCommittee(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/interview/committee/${id}`);
+  }
+
+  getShortlistedCandidates(cycle: string, postName: string): Observable<ShortlistedCandidate[]> {
+    return this.http.get<ShortlistedCandidate[]>(
+      `${this.baseUrl}/interview/shortlisted-candidates?cycle=${encodeURIComponent(cycle)}&post_name=${encodeURIComponent(postName)}`
+    );
+  }
 }
+

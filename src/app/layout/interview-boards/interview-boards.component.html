@@ -1,0 +1,123 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="interview-boards-container">
+  <p-card header="All Interview Boards" styleClass="premium-card">
+    
+    <!-- Toolbar Section -->
+    <div class="table-toolbar">
+      <button
+        pButton
+        label="Export Summary PDF"
+        icon="pi pi-file-pdf"
+        class="p-button-danger shadow-button"
+        [disabled]="committees.length === 0"
+        (click)="exportPdf()">
+      </button>
+    </div>
+
+    <!-- Main Table -->
+    <p-table
+      [value]="committees"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="10"
+      dataKey="id"
+      styleClass="p-datatable-striped premium-table"
+      responsiveLayout="scroll">
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3.5rem"></th>
+          <th>Recruitment Cycle</th>
+          <th>Post Name</th>
+          <th>Chairperson Name</th>
+          <th>Total Members</th>
+          <th style="width: 100px; text-align: center;">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-committee let-expanded="expanded">
+        <tr>
+          <td>
+            <button
+              type="button"
+              pButton
+              [pRowToggler]="committee"
+              class="p-button-text p-button-rounded p-button-plain p-button-sm"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+            </button>
+          </td>
+          <td>{{ committee.cycle }}</td>
+          <td>{{ committee.post_name }}</td>
+          <td>
+            <span class="font-semibold text-blue-900">
+              {{ getChairperson(committee)?.name || 'Not Configured' }}
+            </span>
+          </td>
+          <td>
+            <span class="member-count-badge">
+              {{ getMemberCount(committee) }}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger p-button-sm"
+              (click)="confirmDelete(committee)">
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Row Expansion template -->
+      <ng-template pTemplate="rowexpansion" let-committee>
+        <tr>
+          <td colspan="6" class="expansion-cell">
+            <div class="expansion-content animate-fade-in">
+              <h4 class="expansion-title">Committee Members Details</h4>
+              <p-table [value]="getAdditionalMembers(committee)" styleClass="p-datatable-striped inner-table" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Sl. No</th>
+                    <th>Member Type</th>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Lab/Estt.</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-member let-rowIndex="rowIndex">
+                  <tr [class.chair-row]="member.member_type.toLowerCase() === 'chairperson'">
+                    <td>{{ rowIndex + 1 }}</td>
+                    <td>
+                      <span class="type-badge" [class.chair-badge]="member.member_type.toLowerCase() === 'chairperson'">
+                        {{ member.member_type }}
+                      </span>
+                    </td>
+                    <td><span class="font-medium">{{ member.name }}</span></td>
+                    <td>{{ member.designation }}</td>
+                    <td>{{ member.lab_estt }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center p-5">
+            <div class="empty-state">
+              <i class="pi pi-users empty-state-icon"></i>
+              <p class="empty-state-text">No Interview Boards configured yet.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+
+  </p-card>
+</div>

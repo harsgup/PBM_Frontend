@@ -345,7 +345,7 @@ export class TechnicalScreeningComponent {
     const committeeName = this.jobs[0].committee_name || 'N/A';
 
     // Landscape A4 size is 297mm x 210mm
-    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const doc = this.pdfService.createDocument('landscape');
 
     const batchSize = 7;
     const totalJobs = this.jobs.length;
@@ -365,60 +365,28 @@ export class TechnicalScreeningComponent {
         doc.addPage();
       }
 
-      // Draw Header border (X: 14, width: 269, height: 28)
-      doc.rect(14, 8, 269, 28);
+      // Draw Header
+      this.pdfService.drawHeader(
+        doc,
+        `CEPTAM Advt.: ${cycle}`,
+        'TECHNICAL SCREENING COMMITTEE',
+        'CANDIDATE VERIFICATION SHEET',
+        'No. RD/PBM/01',
+        'landscape'
+      );
 
-      // Draw Logo
-      try {
-        doc.addImage(LOGO_BASE64, 'PNG', 16.5, 9, 23, 26);
-      } catch (e) {
-        console.warn("Failed to render logo:", e);
-      }
-
-      // Vertical line after logo
-      doc.line(42, 8, 42, 36);
-
-      // Center Header Text (center is X = 150.5)
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text(`CEPTAM Advt.: ${cycle}`, 150.5, 15, { align: 'center' });
-      doc.setFontSize(10);
-      doc.text('TECHNICAL SCREENING COMMITTEE', 150.5, 21, { align: 'center' });
-      doc.setFontSize(11);
-      doc.text('CANDIDATE VERIFICATION SHEET', 150.5, 27, { align: 'center' });
-
-      // Vertical line before doc number at X = 259
-      doc.line(259, 8, 259, 36);
-
-      // Doc Number (Right aligned, margins at X=283)
-      doc.setFontSize(8);
-      doc.text('No. RD/PBM/01', 281, 21, { align: 'right' });
-
-      // Sub-header Row (Post Name, Committee Name, Date)
-      doc.rect(14, 36, 269, 8);
-
-      // Gray background for labels
-      doc.setFillColor(240, 240, 240);
-      doc.rect(14, 36, 20, 8, 'F');
-      doc.rect(144, 36, 28, 8, 'F');
-      doc.rect(237, 36, 12, 8, 'F');
-
-      // Text inside sub-header
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-      doc.text('Post Name', 24, 41, { align: 'center' });
-      doc.text(post, 36, 41);
-      doc.text('Committee Name', 158, 41, { align: 'center' });
-      doc.text(committeeName, 174, 41);
-      doc.text('Date', 243, 41, { align: 'center' });
-      doc.text(dateStr, 266, 41, { align: 'center' });
-
-      // Vertical lines in sub-header
-      doc.line(34, 36, 34, 44);
-      doc.line(144, 36, 144, 44);
-      doc.line(172, 36, 172, 44);
-      doc.line(237, 36, 237, 44);
-      doc.line(249, 36, 249, 44);
+      // Draw Sub-Header
+      const fields = [
+        { label: 'Post Name', value: '', width: 20 },
+        { label: '', value: post, width: 75 },
+        { label: 'Cycle', value: '', width: 14 },
+        { label: '', value: cycle, width: 35 },
+        { label: 'Committee Name', value: '', width: 28 },
+        { label: '', value: committeeName, width: 55 },
+        { label: 'Date', value: '', width: 12 },
+        { label: '', value: '', width: 30 }
+      ];
+      this.pdfService.drawSubHeader(doc, fields, 'landscape');
 
       // Get candidates for this page
       const startIdx = pageIdx * batchSize;
@@ -434,60 +402,33 @@ export class TechnicalScreeningComponent {
         row.remarks || ''
       ]);
 
-      autoTable(doc, {
-        startY: 48,
-        head: headers,
-        body: data,
-        theme: 'grid',
-        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold', halign: 'center', lineWidth: 0.1, lineColor: [0, 0, 0] },
-        styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak', textColor: [0, 0, 0], lineColor: [0, 0, 0] },
-        columnStyles: {
-          0: { cellWidth: 15, halign: 'center' },
-          1: { cellWidth: 40, halign: 'center' },
-          2: { cellWidth: 70 },
-          3: { cellWidth: 44, halign: 'center' },
-          4: { cellWidth: 100 }
-        },
-        didDrawPage: (data) => {
-          const str = `Page ${doc.getNumberOfPages()} of ${numPages}`;
-          doc.setFontSize(8);
-          doc.setTextColor(150);
-          doc.text(str, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 8);
-        }
-      });
+      const columnStyles = {
+        0: { cellWidth: 15, halign: 'center' },
+        1: { cellWidth: 40, halign: 'center' },
+        2: { cellWidth: 70 },
+        3: { cellWidth: 44, halign: 'center' },
+        4: { cellWidth: 100 }
+      };
+
+      this.pdfService.drawTable(doc, headers, data, 48, columnStyles);
+
+      // Draw Page Numbers
+      this.pdfService.drawPageNumber(doc, pageIdx + 1, numPages);
 
       // Draw signature block at bottom of current page
-      const drawY = 160;
-      // Mathematically symmetric column centers for 4 roles over 269mm printable width
-      const sigX = [47.6, 114.9, 182.1, 249.4];
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-
-      // Parentheses for signatures
-      doc.text('(                             )', sigX[0], drawY, { align: 'center' });
-      doc.text('(                             )', sigX[1], drawY, { align: 'center' });
-      doc.text('(                             )', sigX[2], drawY, { align: 'center' });
-      doc.text('(                             )', sigX[3], drawY, { align: 'center' });
-
-      // Roles
-      doc.text('Lab Representative', sigX[0], drawY + 5, { align: 'center' });
-      doc.text('External Member', sigX[1], drawY + 5, { align: 'center' });
-      doc.text('Subject Expert', sigX[2], drawY + 5, { align: 'center' });
-      doc.text('Chairman', sigX[3], drawY + 5, { align: 'center' });
-
-      // Names
       const labRepName = this.committeeDetails?.lab_rep || 'N/A';
       const extMemName = this.committeeDetails?.external_member || 'N/A';
       const subjExpName = this.committeeDetails?.subject_expert || 'N/A';
       const chairmanName = this.committeeDetails?.chairman || 'N/A';
 
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Name: ${labRepName}`, sigX[0], drawY + 10, { align: 'center' });
-      doc.text(`Name: ${extMemName}`, sigX[1], drawY + 10, { align: 'center' });
-      doc.text(`Name: ${subjExpName}`, sigX[2], drawY + 10, { align: 'center' });
-      doc.text(`Name: ${chairmanName}`, sigX[3], drawY + 10, { align: 'center' });
+      const signers = [
+        { role: 'Lab Representative', name: labRepName, designation: '' },
+        { role: 'External Member', name: extMemName, designation: '' },
+        { role: 'Subject Expert', name: subjExpName, designation: '' },
+        { role: 'Chairman', name: chairmanName, designation: '' }
+      ];
+
+      this.pdfService.drawSignatureBlock(doc, signers, 'landscape', 160);
     }
 
     doc.save(`Technical_Screening_Sheet_${cycle}_${post}.pdf`.replace(/\s+/g, '_'));
