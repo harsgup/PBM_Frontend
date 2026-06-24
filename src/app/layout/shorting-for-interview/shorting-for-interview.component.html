@@ -92,49 +92,58 @@
   </ng-template>
 
   <ng-template pTemplate="header">
-      
     <tr>
       <th style="width:3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
       <th pSortableColumn="application_no">
         Application No <p-sortIcon field="application_no"></p-sortIcon>
         <p-columnFilter type="text" field="application_no" display="menu"></p-columnFilter>
       </th>
-      <th>
-        Candidate Name 
-        <p-columnFilter type="text" field="cycle" display="menu"></p-columnFilter>
+      <th pSortableColumn="candidate_name">
+        Candidate Name <p-sortIcon field="candidate_name"></p-sortIcon>
+        <p-columnFilter type="text" field="candidate_name" display="menu"></p-columnFilter>
       </th>
       <th pSortableColumn="category">
         Category <p-sortIcon field="category"></p-sortIcon>
         <p-columnFilter type="text" field="category" display="menu"></p-columnFilter>
       </th>
+      <th pSortableColumn="pwd">
+        PwD Status <p-sortIcon field="pwd"></p-sortIcon>
+        <p-columnFilter type="text" field="pwd" display="menu"></p-columnFilter>
+      </th>
       <th pSortableColumn="marks">
         Marks <p-sortIcon field="marks"></p-sortIcon>
-        <p-columnFilter type="text" field="marks" display="menu"></p-columnFilter>
+        <p-columnFilter type="numeric" field="marks" display="menu"></p-columnFilter>
       </th>
-      <th>Screening Remark</th>
+      <th>Technical Screening Remarks</th>
       <th pSortableColumn="status">
         Status <p-sortIcon field="status"></p-sortIcon>
         <p-columnFilter type="text" field="status" display="menu"></p-columnFilter>
       </th>
+    </tr>
   </ng-template>
 
   <ng-template pTemplate="body" let-job>
-    <tr [ngClass]="{'row-completed': job.status === 'complete'}">
+    <tr [ngClass]="{'row-completed': job.status === 'complete', 'row-shortlisted': job.shortlisted}">
       <td><p-tableCheckbox [value]="job"></p-tableCheckbox></td>
       <td>{{ job.application_no }}</td>
-      <td>{{ job.cycle }}</td>
-      <td>{{ job.post_name }}</td>
-      <td>{{job.committee_name}}</td>
-      <td>{{ job.approver_remarks }}</td>
+      <td>{{ job.candidate_name }}</td>
+      <td>{{ job.category }}</td>
+      <td>{{ job.pwd || 'No' }}</td>
+      <td>{{ job.marks !== null ? job.marks : '-' }}</td>
+      <td>{{ job.remarks || '-' }}</td>
       <td class="text-center">
-      <div class="status-cell">
-        <p-tag 
-          [severity]="job.status === 'complete' ? 'success' : 'warning'" 
-          [value]="job.status | uppercase">
-        </p-tag>
-      </div>
+        <div class="status-cell flex items-center justify-center gap-1">
+          <p-tag 
+            [severity]="job.status === 'complete' ? 'success' : 'warning'" 
+            [value]="job.status | uppercase">
+          </p-tag>
+          <p-tag 
+            *ngIf="job.shortlisted"
+            severity="info" 
+            value="SHORTLISTED">
+          </p-tag>
+        </div>
       </td>
-
     </tr>
   </ng-template>
 

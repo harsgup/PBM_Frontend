@@ -55,6 +55,20 @@ assignJobs(payload: any) {
       return this.http.get<any>(url);
   }
 
+  getDashboardStats(cycle?: string, post?: string) {
+      let url = `${this.baseUrl}/admin/dashboard/stats`;
+
+      const params: string[] = [];
+      if (cycle) params.push(`cycle=${cycle}`);
+      if (post) params.push(`post_name=${post}`);
+
+      if (params.length) {
+        url += '?' + params.join('&');
+      }
+
+      return this.http.get<any>(url);
+  }
+
 
     getAssignedJobs() {
     return this.http.get<any[]>(

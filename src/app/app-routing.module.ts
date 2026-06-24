@@ -14,8 +14,11 @@ import { UserDashboardComponent } from './pages/screening/user-dashboard/user-da
 import { AssignedJobComponent } from './layout/assigned-job/assigned-job.component';
 import { BuildJobComponent } from './layout/build-job/build-job.component';
 import { TechnicalCommitteeComponent } from './layout/technical-committee/technical-committee.component';
+import { BoardFormationComponent } from './layout/board-formation/board-formation.component';
 import { TechnicalScreeningComponent } from './layout/technical/technical-screening/technical-screening.component';
 import { ShortingForInterviewComponent } from './layout/shorting-for-interview/shorting-for-interview.component';
+import { DashboardRedirectComponent } from './layout/dashboard-redirect/dashboard-redirect.component';
+import { AdminDashboardComponent } from './layout/admin-dashboard/admin-dashboard.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -24,12 +27,15 @@ const routes: Routes = [
   { path: 'dashboard',component: DashboardLayoutComponent,canActivate:[AuthGuard],
  
   children: [
+    { path: '', component: DashboardRedirectComponent },
+    { path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [AdminGuard] },
     { path: 'admin/users', component: UsersComponent,canActivate:[AdminGuard] },
     { path: 'admin/users/add', component: AddUserComponent,canActivate:[AdminGuard] },
     { path: 'admin/assign-jobs', component: AssignJobComponent,canActivate:[AdminGuard] },
     { path: 'admin/assigned-jobs', component: AssignedJobComponent,canActivate:[AdminGuard] },
     { path: 'admin/build-jobs', component: BuildJobComponent,canActivate:[AdminGuard] },
     { path: 'admin/technical-committee', component: TechnicalCommitteeComponent,canActivate:[AdminGuard] },
+    { path: 'admin/board-formation', component: BoardFormationComponent, canActivate: [AdminGuard] },
     { path: 'screening/technical', component: TechnicalScreeningComponent,canActivate:[AuthGuard] },
     { path: 'screening/shortlisting', component:ShortingForInterviewComponent,canActivate:[AuthGuard]},
 

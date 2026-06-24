@@ -13,9 +13,17 @@ export class ShortlistService {
 
 
   shortlistCandidates(data: any) {
-  return this.http.post(
-    `${this.baseUrl}/shortlist`,
-    data
-  );
-}
+    return this.http.post(
+      `${this.baseUrl}/shortlisting/shortlist`,
+      data
+    );
+  }
+
+  getShortlistingJobs(cycle: string, post: string) {
+    const payload = { cycle, post_name: post };
+    return this.http.post<any[]>(
+      `${this.baseUrl}/shortlisting/shortlisting-jobs`,
+      payload
+    );
+  }
 }

@@ -41,6 +41,12 @@ export class SidebarComponent implements OnInit {
     this.menuItems = [
 
       ...(isAdmin ? [{
+        label: 'Dashboard',
+        icon: 'pi pi-home',
+        routerLink: 'admin/dashboard'
+      }] : []),
+
+      ...(isAdmin ? [{
         label: 'Admin',
         icon: 'pi pi-user',
         items: [
@@ -53,8 +59,16 @@ export class SidebarComponent implements OnInit {
         ]
       }] : []),
 
+      ...(isAdmin ? [{
+        label: 'Interview Section',
+        icon: 'pi pi-comments',
+        items: [
+          { label: 'Board Formation', icon: 'pi pi-users', routerLink: 'admin/board-formation' }
+        ]
+      }] : []),
+
       ...(isAdmin || isVerifier || isApprover ? [{
-        label: 'Screening - 1st Stage',
+        label: 'Screening - Administrative',
         icon: 'pi pi-check-square',
         items: [
           { label: 'Pending Verification', routerLink: 'screening' }

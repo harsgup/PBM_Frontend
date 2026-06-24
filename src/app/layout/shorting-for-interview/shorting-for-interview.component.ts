@@ -22,10 +22,17 @@ import { ShortlistService } from '../../services/shortlist.service';
 export interface TechnicalJob {
   id: number;
   application_no: string;
-  post_name: string;
-  committee_name: string;
   cycle: string;
-  approver_remarks: string;
+  post_name: string;
+  approver_remarks: string | null;
+  committee_name: string;
+  status: string;
+  candidate_name: string | null;
+  category: string | null;
+  pwd: string | null;
+  marks: number | null;
+  remarks: string | null;
+  shortlisted: boolean;
 }
 @Component({
   standalone: true,
@@ -173,8 +180,8 @@ export class ShortingForInterviewComponent {
   
     this.loading = true;
   
-    this.technicalService
-      .getTechnicalScreeningJobs(cycle, post)
+    this.sL
+      .getShortlistingJobs(cycle, post)
       .subscribe({
   
         next: (res) => {
@@ -374,7 +381,7 @@ performShortlist(action: string) {
 
       this.selectedJobs = [];
 
-      // this.loadJobs(); // refresh table
+      this.showCandidates(); // refresh table
 
     }
 

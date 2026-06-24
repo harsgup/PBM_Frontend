@@ -1,0 +1,309 @@
+<div class="dashboard-container">
+  <!-- Header Area -->
+  <div class="dashboard-header flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Admin Command Center</h1>
+      <p class="text-sm text-gray-500 mt-1">Real-time verification progress and verifier workload tracking</p>
+    </div>
+    
+    <!-- Refresh Button -->
+    <button pButton icon="pi pi-refresh" class="p-button-rounded p-button-text p-button-plain hover:rotate-180 transition-transform duration-500" (click)="fetchStats()" [loading]="loading"></button>
+  </div>
+
+  <!-- Glassmorphic Filter Bar -->
+  <div class="filter-bar p-5 mb-6 flex flex-wrap items-center gap-4">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-filter text-indigo-500 text-lg"></i>
+      <span class="font-semibold text-gray-700 text-sm">Filter Workload:</span>
+    </div>
+
+    <!-- Cycle Dropdown -->
+    <p-dropdown
+      [options]="cycles"
+      [(ngModel)]="selectedCycle"
+      (onChange)="onCycleChange()"
+      placeholder="All Recruitment Cycles"
+      [showClear]="true"
+      appendTo="body"
+      class="w-64"
+    ></p-dropdown>
+
+    <!-- Post Dropdown -->
+    <p-dropdown
+      [options]="posts"
+      [(ngModel)]="selectedPost"
+      (onChange)="onPostChange()"
+      placeholder="All Post Names"
+      [disabled]="!selectedCycle"
+      [showClear]="true"
+      appendTo="body"
+      class="w-64"
+    ></p-dropdown>
+
+    <!-- Clear Button -->
+    <button 
+      *ngIf="selectedCycle || selectedPost"
+      pButton 
+      label="Reset Filters" 
+      icon="pi pi-times-circle" 
+      class="p-button-outlined p-button-sm p-button-danger ml-auto"
+      (click)="clearFilters()"
+    ></button>
+  </div>
+
+  <!-- KPI Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    
+    <!-- Total Candidates Card -->
+    <div class="kpi-card bg-gradient-to-br from-indigo-600 to-indigo-800 text-white shadow-xl">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <span class="text-sm opacity-80 uppercase font-semibold tracking-wider">Total Candidates</span>
+          <h3 class="text-4xl font-extrabold mt-1">{{ overview.total_candidates }}</h3>
+        </div>
+        <div class="kpi-icon-wrapper bg-white/20">
+          <i class="pi pi-id-card text-2xl"></i>
+        </div>
+      </div>
+      <div class="text-xs opacity-90">
+        Active screening candidates in cycle
+      </div>
+    </div>
+
+    <!-- Verifier 1 Progress Card -->
+    <div class="kpi-card bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-xl">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <span class="text-sm opacity-80 uppercase font-semibold tracking-wider">Verifier 1 Stage</span>
+          <h3 class="text-3xl font-extrabold mt-1">
+            {{ overview.v1_assigned > 0 ? ((overview.v1_completed / overview.v1_assigned) * 100 | number:'1.0-1') + '%' : '0%' }}
+          </h3>
+        </div>
+        <div class="kpi-icon-wrapper bg-white/20">
+          <i class="pi pi-check-circle text-2xl"></i>
+        </div>
+      </div>
+      <div class="custom-progress-bar-wrapper mb-2">
+        <div class="custom-progress-bar" [style.width.%]="overview.v1_assigned > 0 ? (overview.v1_completed / overview.v1_assigned) * 100 : 0"></div>
+      </div>
+      <div class="text-xs opacity-90 flex justify-between">
+        <span>Completed: <b>{{ overview.v1_completed }}</b></span>
+        <span>Assigned: <b>{{ overview.v1_assigned }}</b></span>
+      </div>
+    </div>
+
+    <!-- Verifier 2 Progress Card -->
+    <div class="kpi-card bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-xl">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <span class="text-sm opacity-80 uppercase font-semibold tracking-wider">Verifier 2 Stage</span>
+          <h3 class="text-3xl font-extrabold mt-1">
+            {{ overview.v2_assigned > 0 ? ((overview.v2_completed / overview.v2_assigned) * 100 | number:'1.0-1') + '%' : '0%' }}
+          </h3>
+        </div>
+        <div class="kpi-icon-wrapper bg-white/20">
+          <i class="pi pi-shield text-2xl"></i>
+        </div>
+      </div>
+      <div class="custom-progress-bar-wrapper mb-2">
+        <div class="custom-progress-bar" [style.width.%]="overview.v2_assigned > 0 ? (overview.v2_completed / overview.v2_assigned) * 100 : 0"></div>
+      </div>
+      <div class="text-xs opacity-90 flex justify-between">
+        <span>Completed: <b>{{ overview.v2_completed }}</b></span>
+        <span>Assigned: <b>{{ overview.v2_assigned }}</b></span>
+      </div>
+    </div>
+
+    <!-- Approver Progress Card -->
+    <div class="kpi-card bg-gradient-to-br from-orange-500 to-rose-600 text-white shadow-xl">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <span class="text-sm opacity-80 uppercase font-semibold tracking-wider">Approver Stage</span>
+          <h3 class="text-3xl font-extrabold mt-1">
+            {{ overview.approver_assigned > 0 ? ((overview.approver_completed / overview.approver_assigned) * 100 | number:'1.0-1') + '%' : '0%' }}
+          </h3>
+        </div>
+        <div class="kpi-icon-wrapper bg-white/20">
+          <i class="pi pi-verified text-2xl"></i>
+        </div>
+      </div>
+      <div class="custom-progress-bar-wrapper mb-2">
+        <div class="custom-progress-bar" [style.width.%]="overview.approver_assigned > 0 ? (overview.approver_completed / overview.approver_assigned) * 100 : 0"></div>
+      </div>
+      <div class="text-xs opacity-90 flex justify-between">
+        <span>Completed: <b>{{ overview.approver_completed }}</b></span>
+        <span>Assigned: <b>{{ overview.approver_assigned }}</b></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+    
+    <!-- Verifiers & Approvers Workload Table (Takes 2 columns in XL) -->
+    <div class="xl:col-span-2 card bg-white p-6 shadow-md rounded-xl border border-gray-100">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Verifier & Approver Work Tracker</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Real-time candidate assignment and completion tracking per user</p>
+        </div>
+      </div>
+
+      <p-table 
+        [value]="userStats" 
+        [loading]="loading"
+        responsiveLayout="scroll"
+        class="w-full"
+        styleClass="p-datatable-striped"
+      >
+        <ng-template pTemplate="header">
+          <tr class="bg-gray-50 text-gray-700 text-xs font-semibold uppercase">
+            <th class="px-4 py-3 text-left w-64">User Name</th>
+            <th class="px-4 py-3 text-left w-32">Role</th>
+            <th class="px-4 py-3 text-left w-36">Rank / Designation</th>
+            <th class="px-4 py-3 text-center">Assigned</th>
+            <th class="px-4 py-3 text-center">Completed</th>
+            <th class="px-4 py-3 text-center">Pending</th>
+            <th class="px-4 py-3 text-left w-48">Progress</th>
+          </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="body" let-user>
+          <tr class="border-b hover:bg-slate-50 transition-colors duration-150 text-sm">
+            <!-- User Name with Avatar -->
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="avatar-circle font-semibold text-xs flex items-center justify-center bg-indigo-50 text-indigo-600 border border-indigo-100">
+                  {{ getInitials(user.name) }}
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-800">{{ user.name }}</div>
+                  <div class="text-xs text-gray-400">ID: #00{{ user.id }}</div>
+                </div>
+              </div>
+            </td>
+            
+            <!-- Role Badge -->
+            <td class="px-4 py-3">
+              <span 
+                class="role-badge font-semibold text-xs py-1 px-2.5 rounded-full inline-block text-center"
+                [ngClass]="user.role === 'approver' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'"
+              >
+                {{ user.role | titlecase }}
+              </span>
+            </td>
+            
+            <!-- Rank -->
+            <td class="px-4 py-3 text-gray-600">
+              {{ user.rank || 'N/A' }}
+            </td>
+            
+            <!-- Assigned -->
+            <td class="px-4 py-3 text-center font-medium text-gray-800">
+              {{ user.assigned }}
+            </td>
+            
+            <!-- Completed -->
+            <td class="px-4 py-3 text-center font-semibold text-emerald-600">
+              {{ user.completed }}
+            </td>
+            
+            <!-- Pending -->
+            <td class="px-4 py-3 text-center font-medium">
+              <span 
+                class="px-2 py-0.5 rounded text-xs"
+                [ngClass]="user.pending === 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'"
+              >
+                {{ user.pending }}
+              </span>
+            </td>
+            
+            <!-- Progress Bar & Rate -->
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <div class="flex-1 bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-full rounded-full transition-all duration-500" [style.width.%]="user.completion_rate"></div>
+                </div>
+                <span class="text-xs font-semibold text-gray-700 w-12 text-right">{{ user.completion_rate }}%</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="text-center py-12 text-gray-400">
+              <i class="pi pi-users text-4xl mb-3 block text-gray-300"></i>
+              No active verifiers or approvers found
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Quick Analytics / Insights (Takes 1 column in XL) -->
+    <div class="card bg-white p-6 shadow-md rounded-xl border border-gray-100 flex flex-col gap-6">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">System Information</h2>
+        <p class="text-xs text-gray-400 mt-0.5 font-medium">Quick links & screening system configurations</p>
+      </div>
+
+      <!-- Quick Action Cards -->
+      <div class="flex flex-col gap-4">
+        
+        <div [routerLink]="['/dashboard/admin/users']" class="quick-link-item flex items-center justify-between p-3.5 rounded-lg border border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/20 transition-all duration-200 cursor-pointer">
+          <div class="flex items-center gap-3">
+            <div class="icon-square bg-indigo-50 text-indigo-600">
+              <i class="pi pi-user-plus"></i>
+            </div>
+            <div>
+              <div class="font-semibold text-gray-700 text-sm">User Management</div>
+              <div class="text-xs text-gray-400">Add or edit screeners & roles</div>
+            </div>
+          </div>
+          <i class="pi pi-chevron-right text-gray-400"></i>
+        </div>
+
+        <div [routerLink]="['/dashboard/admin/assign-jobs']" class="quick-link-item flex items-center justify-between p-3.5 rounded-lg border border-slate-100 hover:border-emerald-100 hover:bg-emerald-50/20 transition-all duration-200 cursor-pointer">
+          <div class="flex items-center gap-3">
+            <div class="icon-square bg-emerald-50 text-emerald-600">
+              <i class="pi pi-clipboard"></i>
+            </div>
+            <div>
+              <div class="font-semibold text-gray-700 text-sm">Assign Screening Jobs</div>
+              <div class="text-xs text-gray-400">Distribute candidates to verifiers</div>
+            </div>
+          </div>
+          <i class="pi pi-chevron-right text-gray-400"></i>
+        </div>
+
+        <div [routerLink]="['/dashboard/admin/technical-committee']" class="quick-link-item flex items-center justify-between p-3.5 rounded-lg border border-slate-100 hover:border-purple-100 hover:bg-purple-50/20 transition-all duration-200 cursor-pointer">
+          <div class="flex items-center gap-3">
+            <div class="icon-square bg-purple-50 text-purple-600">
+              <i class="pi pi-users"></i>
+            </div>
+            <div>
+              <div class="font-semibold text-gray-700 text-sm">Technical Committee</div>
+              <div class="text-xs text-gray-400">Setup technical screening panels</div>
+            </div>
+          </div>
+          <i class="pi pi-chevron-right text-gray-400"></i>
+        </div>
+
+      </div>
+
+      <!-- Quick Tips / System Health -->
+      <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 mt-auto">
+        <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <i class="pi pi-info-circle text-slate-400"></i> System Note
+        </h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Candidates must be screened by both Verifier 1 and Verifier 2 before they become eligible for final approval by the designated Approver.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -74,6 +74,15 @@
     background-color: #c3e6cb !important;
 }
 
+.row-shortlisted {
+    background-color: #e3f2fd !important;
+    color: #0d47a1 !important;
+}
+
+.row-shortlisted:hover {
+    background-color: #bbdefb !important;
+}
+
 .doc-toolbar {
   display: flex;
   gap: 0.5rem;

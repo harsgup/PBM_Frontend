@@ -1,0 +1,191 @@
+<p-toast></p-toast>
+
+<div class="board-formation-container">
+  <p-card header="Interview Board Formation" styleClass="premium-card">
+    
+    <!-- Selection Section -->
+    <form [formGroup]="selectionForm" class="selection-grid">
+      <div class="p-field">
+        <label for="cycle" class="form-label">Recruitment Cycle</label>
+        <p-dropdown
+          id="cycle"
+          [options]="cycles"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="cycle"
+          placeholder="Select Cycle"
+          appendTo="body"
+          [style]="{ width: '100%' }">
+        </p-dropdown>
+      </div>
+
+      <div class="p-field">
+        <label for="post" class="form-label">Post Name</label>
+        <p-dropdown
+          id="post"
+          [options]="posts"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="post_name"
+          placeholder="Select Post"
+          appendTo="body"
+          [disabled]="!selectionForm.value.cycle"
+          [style]="{ width: '100%' }">
+        </p-dropdown>
+      </div>
+    </form>
+
+    <!-- Main Content (Only visible when cycle and post are selected) -->
+    <div *ngIf="selectionForm.valid" class="board-details-section">
+      
+      <!-- Chairperson Card Section -->
+      <div class="section-header">
+        <h3 class="gradient-title">Chairperson Details</h3>
+      </div>
+      
+      <div class="chairperson-container">
+        <div *ngIf="chairperson" class="chairperson-card active-card">
+          <div class="chairperson-info">
+            <div class="info-item">
+              <span class="info-label">Name</span>
+              <span class="info-value font-semibold">{{ chairperson.name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Designation</span>
+              <span class="info-value">{{ chairperson.designation }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Lab/Estt.</span>
+              <span class="info-value">{{ chairperson.lab_estt }}</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-outlined p-button-warning" (click)="openChairpersonForm()"></button>
+          </div>
+        </div>
+
+        <div *ngIf="!chairperson" class="chairperson-card empty-card" (click)="openChairpersonForm()">
+          <i class="pi pi-user-plus empty-icon"></i>
+          <span class="empty-text">Enter Chairperson Details</span>
+          <button pButton label="Enter Chairperson Details" icon="pi pi-plus" class="p-button-outlined p-button-info p-button-sm mt-3" (click)="$event.stopPropagation(); openChairpersonForm()"></button>
+        </div>
+      </div>
+
+      <!-- Committee Members Section -->
+      <div class="section-header mt-5">
+        <h3 class="gradient-title">Committee Members</h3>
+        <button pButton label="Add Member" icon="pi pi-plus" class="p-button-success p-button-sm" (click)="openMemberForm()"></button>
+      </div>
+
+      <div class="members-table-container">
+        <p-table [value]="membersList" [responsiveLayout]="'scroll'" styleClass="p-datatable-striped premium-table">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Sl. No</th>
+              <th>Member Type</th>
+              <th>Name</th>
+              <th>Designation</th>
+              <th>Lab/Estt.</th>
+              <th style="width: 120px; text-align: center;">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-member let-i="rowIndex">
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ member.member_type }}</td>
+              <td>{{ member.name }}</td>
+              <td>{{ member.designation }}</td>
+              <td>{{ member.lab_estt }}</td>
+              <td style="text-align: center;">
+                <button pButton icon="pi pi-pencil" class="p-button-text p-button-warning p-button-sm mr-2" (click)="editMember(i)"></button>
+                <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm" (click)="deleteMember(i)"></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center p-4">
+                No additional committee members added yet.
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <!-- Validation & Save Section -->
+      <div class="footer-actions mt-5">
+        <div class="validation-info">
+          <span [class.text-success]="chairperson" [class.text-danger]="!chairperson">
+            <i class="pi" [ngClass]="chairperson ? 'pi-check-circle' : 'pi-times-circle'"></i>
+            Chairperson Details
+          </span>
+          <span [class.text-success]="totalMembersCount >= 3" [class.text-danger]="totalMembersCount < 3">
+            <i class="pi" [ngClass]="totalMembersCount >= 3 ? 'pi-check-circle' : 'pi-times-circle'"></i>
+            Total Members Count: {{ totalMembersCount }} / 3 (min 3 required)
+          </span>
+        </div>
+        <button pButton label="Save Board" icon="pi pi-save" class="p-button-lg p-button-success shadow-button" [disabled]="!isBoardValid()" (click)="saveBoard()"></button>
+      </div>
+
+    </div>
+
+    <!-- Empty Selection State -->
+    <div *ngIf="!selectionForm.valid" class="empty-selection-placeholder">
+      <i class="pi pi-info-circle placeholder-icon"></i>
+      <span class="placeholder-text">Please select Recruitment Cycle and Post Name to configure the Board Formation.</span>
+    </div>
+
+  </p-card>
+</div>
+
+<!-- Chairperson Form Dialog -->
+<p-dialog header="Enter Chairperson Details" [(visible)]="showChairpersonDialog" [modal]="true" [style]="{ width: '450px' }" [draggable]="false" [resizable]="false" appendTo="body" styleClass="premium-dialog">
+  <form [formGroup]="chairpersonForm" (ngSubmit)="saveChairperson()" class="dialog-form">
+    <div class="p-field">
+      <label class="form-label">Member Type</label>
+      <input pInputText formControlName="member_type" class="w-full bg-gray-100 cursor-not-allowed" readonly />
+    </div>
+    <div class="p-field mt-3">
+      <label for="chair-name" class="form-label">Name</label>
+      <input id="chair-name" pInputText formControlName="name" placeholder="Enter Chairperson Name" class="w-full" />
+    </div>
+    <div class="p-field mt-3">
+      <label for="chair-designation" class="form-label">Designation</label>
+      <input id="chair-designation" pInputText formControlName="designation" placeholder="Enter Designation" class="w-full" />
+    </div>
+    <div class="p-field mt-3">
+      <label for="chair-lab" class="form-label">Lab/Estt.</label>
+      <input id="chair-lab" pInputText formControlName="lab_estt" placeholder="Enter Lab/Estt." class="w-full" />
+    </div>
+    <div class="dialog-footer mt-4">
+      <button pButton type="button" label="Cancel" class="p-button-text p-button-secondary mr-2" (click)="showChairpersonDialog = false"></button>
+      <button pButton type="submit" label="Save Details" class="p-button-success" [disabled]="chairpersonForm.invalid"></button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Member Form Dialog -->
+<p-dialog [header]="editingMemberIndex !== null ? 'Edit Member Details' : 'Add Member Details'" [(visible)]="showMemberDialog" [modal]="true" [style]="{ width: '450px' }" [draggable]="false" [resizable]="false" appendTo="body" styleClass="premium-dialog">
+  <form [formGroup]="memberForm" (ngSubmit)="saveMember()" class="dialog-form">
+    <div class="p-field">
+      <label for="mem-type" class="form-label">Member Type</label>
+      <input id="mem-type" pInputText formControlName="member_type" placeholder="e.g. Subject Expert, External Member, etc." class="w-full" />
+    </div>
+    <div class="p-field mt-3">
+      <label for="mem-name" class="form-label">Name</label>
+      <input id="mem-name" pInputText formControlName="name" placeholder="Enter Member Name" class="w-full" />
+    </div>
+    <div class="p-field mt-3">
+      <label for="mem-designation" class="form-label">Designation</label>
+      <input id="mem-designation" pInputText formControlName="designation" placeholder="Enter Designation" class="w-full" />
+    </div>
+    <div class="p-field mt-3">
+      <label for="mem-lab" class="form-label">Lab/Estt.</label>
+      <input id="mem-lab" pInputText formControlName="lab_estt" placeholder="Enter Lab/Estt." class="w-full" />
+    </div>
+    <div class="dialog-footer mt-4">
+      <button pButton type="button" label="Cancel" class="p-button-text p-button-secondary mr-2" (click)="showMemberDialog = false"></button>
+      <button pButton type="submit" label="Save Member" class="p-button-success" [disabled]="memberForm.invalid"></button>
+    </div>
+  </form>
+</p-dialog>

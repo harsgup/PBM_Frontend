@@ -1,0 +1,152 @@
+.dashboard-container {
+  padding: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  color: #1e293b;
+  background-color: #f8fafc;
+  min-height: calc(100vh - 80px);
+}
+
+/* Glassmorphism filter bar */
+.filter-bar {
+  position: relative;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-bar:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 24px -2px rgba(99, 102, 241, 0.06);
+}
+
+/* KPI Cards styling */
+.kpi-card {
+  padding: 1.5rem;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px -10px rgba(79, 70, 229, 0.3);
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+.kpi-card:hover::after {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.kpi-icon-wrapper {
+  padding: 0.75rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* KPI linear progress bar */
+.custom-progress-bar-wrapper {
+  background: rgba(255, 255, 255, 0.25);
+  height: 6px;
+  border-radius: 9999px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.custom-progress-bar {
+  background: #ffffff;
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Main Table styling */
+.avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.05);
+}
+
+.role-badge {
+  letter-spacing: 0.025em;
+  min-width: 90px;
+  font-size: 0.75rem !important;
+}
+
+::ng-deep .p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 1rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Quick link item transitions */
+.quick-link-item {
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.quick-link-item:hover {
+  transform: translateX(4px);
+}
+
+.quick-link-item:hover .icon-square {
+  background-color: #4f46e5;
+  color: #ffffff;
+}
+
+.icon-square {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Page content background */
+:host {
+  display: block;
+  background-color: #f8fafc;
+}
